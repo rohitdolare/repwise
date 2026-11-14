@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
-import { days, getProgram, mondayIndex } from "@/content/programs";
-import { updateSettings, useHasChosenPlan, useSettings, useWeekday } from "@/lib/store";
+import { days, daysShort, getProgram, mondayIndex } from "@/content/programs";
+import { isCustomSchedule, updateSettings, useHasChosenPlan, useSchedule, useSettings, useWeekday } from "@/lib/store";
+import type { Program } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -33,10 +34,11 @@ export function TodayPreview() {
   const { programId } = useSettings();
   const weekday = useWeekday();
   const program = getProgram(programId);
+  const schedule = useSchedule(program);
 
   if (weekday === null) return <div className="h-40 animate-pulse rounded-3xl bg-muted" />;
   const idx = mondayIndex(weekday);
-  const workout = program.workouts.find((w) => w.id === program.schedule[idx]);
+  const workout = program.workouts.find((w) => w.id === schedule[idx]);
 
   return (
     <Link
@@ -62,5 +64,33 @@ export function TodayPreview() {
         </span>
       </div>
     </Link>
+  );
+}
+
+/** Weekly strip for a plan — shows the user's own days if they customised this plan. */
+export function PlanWeek({ program }: { program: Program }) {
+  const settings = useSettings();
+  const schedule = useSchedule(program);
+  const custom = isCustomSchedule(settings, program);
+  return (
+    <div className="mt-6">
+      <ol className="grid grid-cols-7 gap-1.5">
+        {schedule.map((wid, i) => {
+          const w = program.workouts.find((x) => x.id === wid);
+          return (
+            <li key={i} className={cn("rounded-xl px-1 py-2.5 text-center", w ? "bg-primary/15" : "bg-muted/60")}>
+              <p className="text-[0.65rem] font-semibold text-muted-foreground uppercase">{daysShort[i]}</p>
+              <p className="mt-0.5 truncate text-xs font-bold">{w ? w.name.replace("Full Body ", "FB ") : "Rest"}</p>
+            </li>
+          );
+        })}
+      </ol>
+      <p className="mt-2 text-xs text-muted-foreground">
+        {custom ? "Your custom days. " : "Suggested days — "}
+        <Link href="/today" className="font-medium text-foreground underline underline-offset-4">
+          {custom ? "Edit on Today" : "pick your own on the Today page"}
+        </Link>
+      </p>
+    </div>
   );
 }

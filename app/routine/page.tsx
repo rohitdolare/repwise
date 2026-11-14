@@ -3,9 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, HeartPulse, Users } from "lucide-react";
 import { PageHeader, Blocks } from "@/components/content";
-import { UsePlanButton } from "@/components/plan-bits";
+import { PlanWeek, UsePlanButton } from "@/components/plan-bits";
 import { Badge } from "@/components/ui/badge";
-import { daysShort, programs } from "@/content/programs";
+import { programs } from "@/content/programs";
 import { exerciseMap } from "@/content/exercises";
 import { formatRest } from "@/lib/format";
 
@@ -53,19 +53,7 @@ export default function RoutinePage() {
               <UsePlanButton programId={p.id} />
             </div>
 
-            <ol className="mt-6 grid grid-cols-7 gap-1.5">
-              {p.schedule.map((wid, i) => {
-                const w = p.workouts.find((x) => x.id === wid);
-                return (
-                  <li key={i} className={`rounded-xl px-1 py-2.5 text-center ${w ? "bg-primary/15" : "bg-muted/60"}`}>
-                    <p className="text-[0.65rem] font-semibold text-muted-foreground uppercase">{daysShort[i]}</p>
-                    <p className="mt-0.5 truncate text-xs font-bold">
-                      {w ? w.name.replace("Full Body ", "FB ") : "Rest"}
-                    </p>
-                  </li>
-                );
-              })}
-            </ol>
+            <PlanWeek program={p} />
 
             <div className="mt-4 rounded-2xl border border-dashed p-4">
               <p className="mb-2 flex items-center gap-2 text-sm font-semibold">
@@ -147,6 +135,7 @@ export default function RoutinePage() {
                   "Warm up before every session (see Warm-up & Recovery).",
                   "Stay within the given RIR — most sets end 1–3 reps short of failure.",
                   "Use double progression: add reps until you hit the top of the range on all sets, then add weight.",
+                  "Train on the days that suit you — set your own days on the Today page. Just keep a rest day between sessions that hit the same muscles where you can.",
                   "Missed a day? Shift the week rather than skipping the session.",
                   "Every 4–8 weeks, or when fatigue builds up, take a deload week (half the sets, easier effort).",
                   "Swap any exercise for a listed alternative if equipment is busy or it causes pain.",

@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { defaultProgramId } from "@/content/programs";
-import type { LoggedSet, Session } from "./types";
+import type { LoggedSet, Program, Session } from "./types";
 
 /**
  * Tiny localStorage-backed store. Everything lives on the user's device —
@@ -70,6 +70,8 @@ export type Unit = "kg" | "lb";
 export interface Settings {
   programId: string;
   unit: Unit;
+  /** User-chosen weekly schedule per program (index 0 = Monday). Missing = plan default. */
+  schedules?: Record<string, (string | null)[]>;
 }
 
 const SETTINGS_KEY = "repwise:settings";
@@ -82,6 +84,33 @@ export function useSettings(): Settings {
 
 export function updateSettings(patch: Partial<Settings>) {
   write(SETTINGS_KEY, { ...read(SETTINGS_KEY, DEFAULT_SETTINGS), ...patch });
+}
+
+/** The user's weekly schedule for a program: their custom days, or the plan default. */
+export function useSchedule(program: Program): (string | null)[] {
+  const custom = useSettings().schedules?.[program.id];
+  return isValidSchedule(custom, program) ? custom : program.schedule;
+}
+
+export function isCustomSchedule(settings: Settings, program: Program): boolean {
+  return isValidSchedule(settings.schedules?.[program.id], program);
+}
+
+function isValidSchedule(s: unknown, program: Program): s is (string | null)[] {
+  return (
+    Array.isArray(s) &&
+    s.length === 7 &&
+    s.every((id) => id === null || program.workouts.some((w) => w.id === id))
+  );
+}
+
+/** Save a custom weekly schedule for a program, or pass null to restore the plan default. */
+export function setSchedule(programId: string, schedule: (string | null)[] | null) {
+  const current = read(SETTINGS_KEY, DEFAULT_SETTINGS);
+  const schedules = { ...current.schedules };
+  if (schedule) schedules[programId] = schedule;
+  else delete schedules[programId];
+  write(SETTINGS_KEY, { ...current, schedules });
 }
 
 /** True once the user has explicitly picked a plan. */

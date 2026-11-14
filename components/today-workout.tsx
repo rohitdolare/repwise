@@ -2,10 +2,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, BedDouble, Clock, Flame, HeartPulse, MonitorSmartphone, Moon, Repeat, Target } from "lucide-react";
+import {
+  ArrowRight,
+  BedDouble,
+  CalendarCog,
+  Clock,
+  Flame,
+  HeartPulse,
+  MonitorSmartphone,
+  Moon,
+  Repeat,
+  Target,
+} from "lucide-react";
 import { WeeklyCardio } from "./cardio-widgets";
 import { days, daysShort, getProgram, mondayIndex } from "@/content/programs";
-import { useLogs, useSettings, useTodayKey, useWeekday } from "@/lib/store";
+import { isCustomSchedule, useLogs, useSchedule, useSettings, useTodayKey, useWeekday } from "@/lib/store";
+import { ScheduleEditor } from "./schedule-editor";
 import type { LoadType, WorkoutDay } from "@/lib/types";
 import { ExerciseLogger } from "./exercise-logger";
 import { useWakeLock } from "@/lib/wake-lock";
@@ -20,8 +32,10 @@ function estimateMinutes(w: WorkoutDay) {
 }
 
 export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
-  const { programId } = useSettings();
-  const program = getProgram(programId);
+  const settings = useSettings();
+  const program = getProgram(settings.programId);
+  const schedule = useSchedule(program);
+  const [editing, setEditing] = useState(false);
   const weekday = useWeekday();
   const todayIdx = weekday === null ? null : mondayIndex(weekday);
   const [picked, setPicked] = useState<{ day: number; workoutId?: string } | null>(null);
@@ -35,7 +49,7 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
   }
 
   const dayIdx = picked?.day ?? todayIdx;
-  const workoutId = picked?.workoutId ?? program.schedule[dayIdx];
+  const workoutId = picked?.workoutId ?? schedule[dayIdx];
   const workout = program.workouts.find((w) => w.id === workoutId);
 
   const totalSets = workout?.exercises.reduce((t, e) => t + e.sets, 0) ?? 0;
@@ -51,7 +65,7 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
       {/* Week strip */}
       <div className="-mx-4 overflow-x-auto px-4">
         <ol className="flex min-w-max gap-2">
-          {program.schedule.map((wid, i) => {
+          {schedule.map((wid, i) => {
             const w = program.workouts.find((x) => x.id === wid);
             const active = i === dayIdx && !picked?.workoutId;
             return (
@@ -76,6 +90,24 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
           })}
         </ol>
       </div>
+      <div className="-mt-3 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setEditing((e) => !e)}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
+        >
+          <CalendarCog className="size-4" /> {editing ? "Close" : "Change my training days"}
+        </button>
+      </div>
+
+      {editing && (
+        <ScheduleEditor
+          program={program}
+          schedule={schedule}
+          isCustom={isCustomSchedule(settings, program)}
+          onDone={() => setEditing(false)}
+        />
+      )}
 
       {!workout ? (
         <RestDay program={program} dayName={days[dayIdx]} onPick={(id) => setPicked({ day: dayIdx, workoutId: id })} />
