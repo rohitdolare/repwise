@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowDownRight, ArrowUpRight, Check, Info, RotateCcw, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowUp, ArrowUpRight, Check, Equal, Info, RotateCcw, Sparkles, TrendingUp } from "lucide-react";
 import type { LoadType, Prescription } from "@/lib/types";
-import { recommend, type RecKind } from "@/lib/progression";
-import { saveSet, useLogs, useSettings, useTodayKey } from "@/lib/store";
+import { compareSet, recommend, type RecKind } from "@/lib/progression";
+import { previousSession, saveSet, useLogs, useSettings, useTodayKey } from "@/lib/store";
 import { formatRest, timer } from "@/lib/timer";
 import { primeAudio } from "@/lib/beep";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,8 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
   const today = useTodayKey();
   const history = logs[rx.slug] ?? [];
   const todaySession = today ? history.find((s) => s.date === today) : undefined;
-  const rec = recommend(rx, load, history, unit, today);
+  const prev = previousSession(history, today);
+  const rec = recommend(rx, load, prev, unit);
   const [drafts, setDrafts] = useState<Record<number, { w?: string; r?: string }>>({});
   const isTimed = rx.slug === "plank" || rx.slug === "side-plank";
   const bodyweight = load === "bodyweight";
@@ -42,6 +43,13 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
 
   const setDraft = (i: number, patch: { w?: string; r?: string }) =>
     setDrafts((d) => ({ ...d, [i]: { ...d[i], ...patch } }));
+
+  // What each set row is pre-filled with, so one tap logs it.
+  const suggested = (i: number) => {
+    const w = rec.weight != null ? String(rec.weight) : bodyweight ? "0" : "";
+    const r = String(rec.targetReps[i] ?? rec.targetReps[rec.targetReps.length - 1] ?? rx.repMin);
+    return { w, r };
+  };
 
   return (
     <article className="rounded-2xl border bg-card">
@@ -101,8 +109,9 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
       </div>
 
       <div className="p-4 pt-3">
-        <div className="grid grid-cols-[2.5rem_1fr_1fr_3rem] items-center gap-2 px-1 pb-1.5 text-xs font-medium text-muted-foreground">
+        <div className="grid grid-cols-[2rem_3.75rem_1fr_1fr_3rem] items-center gap-2 px-1 pb-1.5 text-xs font-medium text-muted-foreground">
           <span>Set</span>
+          <span>Prev</span>
           <span>{bodyweight ? `+${unit}` : unit}</span>
           <span>{isTimed ? "Seconds" : "Reps"}</span>
           <span />
@@ -110,19 +119,28 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
         <ul className="space-y-2">
           {Array.from({ length: rx.sets }, (_, i) => {
             const logged = todaySession?.sets[i];
+            const p = prev?.sets[i];
             const d = drafts[i] ?? {};
-            const wVal = d.w ?? (logged ? String(logged.weight) : rec.weight != null ? String(rec.weight) : "");
-            const rVal = d.r ?? (logged ? String(logged.reps) : "");
+            const sug = suggested(i);
+            const wVal = d.w ?? (logged ? String(logged.weight) : sug.w);
+            const rVal = d.r ?? (logged ? String(logged.reps) : sug.r);
             const canLog = i <= done;
+            const cmp = logged && p ? compareSet(logged, p) : null;
             return (
               <li
                 key={i}
                 className={cn(
-                  "grid grid-cols-[2.5rem_1fr_1fr_3rem] items-center gap-2 rounded-xl p-1 transition-colors",
+                  "grid grid-cols-[2rem_3.75rem_1fr_1fr_3rem] items-center gap-2 rounded-xl p-1 transition-colors",
                   logged && "bg-primary/10",
                 )}
               >
                 <span className="text-center font-mono text-sm font-semibold">{i + 1}</span>
+                <span className="flex flex-col items-start leading-tight">
+                  <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                    {p ? (p.weight ? `${p.weight}×${p.reps}` : `${p.reps}`) : "—"}
+                  </span>
+                  {cmp !== null && <CompareTag cmp={cmp} />}
+                </span>
                 <input
                   inputMode="decimal"
                   type="number"
@@ -166,7 +184,7 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
                     type="button"
                     disabled={!canLog}
                     onClick={() => {
-                      const reps = Number(rVal || rec.targetReps[i] || rx.repMin);
+                      const reps = Number(rVal || sug.r);
                       const weight = Number(wVal || 0);
                       if (!Number.isFinite(reps) || reps <= 0) return;
                       primeAudio();
@@ -174,6 +192,13 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
                       setDrafts((all) => {
                         const next = { ...all };
                         delete next[i];
+                        // Carry an edited weight/reps into the remaining sets so it's typed once.
+                        for (let j = i + 1; j < rx.sets; j++) {
+                          const carry: { w?: string; r?: string } = { ...next[j] };
+                          if (d.w !== undefined && d.w !== sug.w && carry.w === undefined) carry.w = d.w;
+                          if (d.r !== undefined && d.r !== sug.r && carry.r === undefined) carry.r = d.r;
+                          next[j] = carry;
+                        }
                         return next;
                       });
                       const last = i + 1 >= rx.sets;
@@ -189,12 +214,30 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
             );
           })}
         </ul>
-        {done > 0 && (
-          <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <RotateCcw className="size-3" /> Tap a green tick to undo a set.
-          </p>
-        )}
+        <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+          {done > 0 ? (
+            <>
+              <RotateCcw className="size-3" /> Tap a green tick to undo a set.
+            </>
+          ) : (
+            "Numbers are pre-filled — just tap the tick if you did them. Edit only what changed."
+          )}
+        </p>
       </div>
     </article>
+  );
+}
+
+function CompareTag({ cmp }: { cmp: -1 | 0 | 1 }) {
+  const t = {
+    1: { icon: ArrowUp, label: "Beat", cls: "text-primary" },
+    0: { icon: Equal, label: "Match", cls: "text-foreground" },
+    [-1]: { icon: ArrowDown, label: "Below", cls: "text-warning" },
+  }[cmp];
+  return (
+    <span className={cn("inline-flex items-center gap-0.5 text-[0.65rem] font-bold uppercase", t.cls)}>
+      <t.icon className="size-3" />
+      {t.label}
+    </span>
   );
 }

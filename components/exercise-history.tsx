@@ -1,41 +1,47 @@
 "use client";
 
-import { Trophy } from "lucide-react";
-import { useLogs, useSettings } from "@/lib/store";
-import { bestSet } from "@/lib/progression";
+import { History, Trophy } from "lucide-react";
+import { bestFor, previousSession, useArchive, useLogs, useSettings, useTodayKey } from "@/lib/store";
 
+const fmtDate = (d: string) => new Date(d + "T00:00").toLocaleDateString(undefined, { day: "numeric", month: "short" });
+
+/** Previous session (the numbers to match or beat) and the all-time best set. */
 export function ExerciseHistory({ slug }: { slug: string }) {
   const logs = useLogs();
+  const archive = useArchive();
   const { unit } = useSettings();
-  const sessions = logs[slug] ?? [];
-  if (sessions.length === 0) {
-    return <p className="text-sm text-muted-foreground">No sessions logged yet. Your history will appear here.</p>;
+  const today = useTodayKey();
+  const prev = previousSession(logs[slug], today);
+  const best = bestFor(slug, logs, archive);
+
+  if (!prev && !best) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Not done yet. After your first session, your numbers to beat will appear here.
+      </p>
+    );
   }
-  const best = bestSet(sessions);
   return (
-    <div className="space-y-3">
-      {best && best.weight > 0 && (
-        <p className="flex items-center gap-2 text-sm">
-          <Trophy className="size-4 text-primary" />
-          Best set: <b className="font-mono">{best.weight} {unit} × {best.reps}</b>
-          <span className="text-muted-foreground">(est. 1RM {Math.round(best.e1rm)} {unit})</span>
+    <div className="space-y-2 text-sm">
+      {prev && (
+        <p className="flex flex-wrap items-center gap-2">
+          <History className="size-4 text-primary" />
+          Previous ({fmtDate(prev.date)}):
+          <b className="font-mono">{prev.sets.map((x) => (x.weight ? `${x.weight}×${x.reps}` : `${x.reps}`)).join(" · ")}</b>
         </p>
       )}
-      <ul className="divide-y rounded-xl border text-sm">
-        {sessions
-          .slice(-6)
-          .reverse()
-          .map((s) => (
-            <li key={s.date} className="flex items-center justify-between gap-3 px-3 py-2.5">
-              <span className="text-muted-foreground">
-                {new Date(s.date + "T00:00").toLocaleDateString(undefined, { day: "numeric", month: "short" })}
-              </span>
-              <span className="font-mono">
-                {s.sets.map((x) => (x.weight ? `${x.weight}×${x.reps}` : `${x.reps}`)).join(" · ")}
-              </span>
-            </li>
-          ))}
-      </ul>
+      {best && (
+        <p className="flex flex-wrap items-center gap-2">
+          <Trophy className="size-4 text-primary" />
+          Best set:
+          <b className="font-mono">{best.weight > 0 ? `${best.weight} ${unit} × ${best.reps}` : `${best.reps} reps`}</b>
+          {best.weight > 0 && (
+            <span className="text-muted-foreground">
+              (est. 1RM {Math.round(best.e1rm)} {unit})
+            </span>
+          )}
+        </p>
+      )}
     </div>
   );
 }

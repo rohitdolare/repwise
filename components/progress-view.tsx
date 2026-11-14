@@ -4,8 +4,19 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { CalendarCheck, Download, Dumbbell, Trash2, Trophy, Upload } from "lucide-react";
 import type { LoadType, Prescription } from "@/lib/types";
-import { bestSet, recommend } from "@/lib/progression";
-import { clearAll, exportData, importData, updateSettings, useLogs, useSettings, useTodayKey } from "@/lib/store";
+import { recommend } from "@/lib/progression";
+import {
+  bestFor,
+  clearAll,
+  exportData,
+  importData,
+  previousSession,
+  updateSettings,
+  useArchive,
+  useLogs,
+  useSettings,
+  useTodayKey,
+} from "@/lib/store";
 import { getProgram } from "@/content/programs";
 import { CardioHistory, WeeklyCardio } from "./cardio-widgets";
 import { cn } from "@/lib/utils";
@@ -14,14 +25,15 @@ export type ProgressMeta = Record<string, { name: string; load: LoadType; rx: Pr
 
 export function ProgressView({ meta }: { meta: ProgressMeta }) {
   const logs = useLogs();
+  const archive = useArchive();
   const { unit, programId } = useSettings();
   const today = useTodayKey();
   const fileRef = useRef<HTMLInputElement>(null);
   const [msg, setMsg] = useState<string | null>(null);
 
   const slugs = Object.keys(logs).filter((s) => meta[s] && logs[s].length);
-  const dates = new Set(slugs.flatMap((s) => logs[s].map((x) => x.date)));
-  const totalSets = slugs.reduce((t, s) => t + logs[s].reduce((n, x) => n + x.sets.length, 0), 0);
+  const dates = new Set([...archive.dates, ...slugs.flatMap((s) => logs[s].map((x) => x.date))]);
+  const totalSets = archive.sets + slugs.reduce((t, s) => t + logs[s].reduce((n, x) => n + x.sets.length, 0), 0);
   const last7 = [...dates].filter((d) => today && daysBetween(d, today) < 7).length;
 
   const rows = slugs
@@ -70,8 +82,9 @@ export function ProgressView({ meta }: { meta: ProgressMeta }) {
           <ul className="space-y-3">
             {rows.map(({ slug, sessions, last }) => {
               const m = meta[slug];
-              const best = bestSet(sessions);
-              const rec = recommend(m.rx, m.load, sessions, unit, null);
+              const best = bestFor(slug, logs, archive);
+              // "Next time" = based on the most recent session (today's if logged).
+              const rec = recommend(m.rx, m.load, previousSession(sessions, null), unit);
               return (
                 <li key={slug} className="rounded-2xl border bg-card p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -81,11 +94,10 @@ export function ProgressView({ meta }: { meta: ProgressMeta }) {
                     >
                       {m.name}
                     </Link>
-                    <span className="shrink-0 text-xs text-muted-foreground">{sessions.length} sessions</span>
                   </div>
                   <div className="mt-2 grid gap-2 text-sm sm:grid-cols-3">
                     <p>
-                      <span className="block text-xs text-muted-foreground">Last ({formatDate(last.date)})</span>
+                      <span className="block text-xs text-muted-foreground">Previous ({formatDate(last.date)})</span>
                       <span className="font-mono">
                         {last.sets.map((x) => (x.weight ? `${x.weight}×${x.reps}` : x.reps)).join(" · ")}
                       </span>

@@ -21,7 +21,7 @@ export function OverloadPlanner() {
 
   const target = { sets: reps.length, repMin: Number(repMin) || 1, repMax: Math.max(Number(repMax) || 1, Number(repMin) || 1) };
   const session = { date: "2000-01-01", sets: reps.map((r) => ({ weight: Number(weight) || 0, reps: Number(r) || 0 })) };
-  const rec = recommend(target, load, [session], unit, null);
+  const rec = recommend(target, load, session, unit);
   const Icon = rec.kind === "increase" || rec.kind === "bodyweight-up" ? ArrowUpRight : rec.kind === "reduce" ? ArrowDownRight : TrendingUp;
 
   return (

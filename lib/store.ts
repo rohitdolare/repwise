@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { defaultProgramId } from "@/content/programs";
 import type { LoggedSet, Program, Session } from "./types";
+import { betterSet, type BestSet } from "./progression";
 
 /**
  * Tiny localStorage-backed store. Everything lives on the user's device —
@@ -129,13 +130,32 @@ export function useHasChosenPlan(): boolean {
 }
 
 // ───────────────────────── Workout logs ─────────────────────────
+//
+// We only keep what the coach needs: for each exercise, the PREVIOUS session
+// (to match or beat) and TODAY's session while it's in progress. Older sessions
+// are folded into a tiny archive (best set + counters) and then dropped.
 
 export type Logs = Record<string, Session[]>;
 const LOGS_KEY = "repwise:logs";
 const EMPTY_LOGS: Logs = {};
 
+export interface Archive {
+  /** Unique dates that had at least one logged set. */
+  dates: string[];
+  /** Total sets in archived (dropped) sessions. */
+  sets: number;
+  /** Best set per exercise from archived sessions. */
+  bests: Record<string, BestSet>;
+}
+const ARCHIVE_KEY = "repwise:archive";
+const EMPTY_ARCHIVE: Archive = { dates: [], sets: 0, bests: {} };
+
 export function useLogs(): Logs {
   return useStored<Logs>(LOGS_KEY, EMPTY_LOGS);
+}
+
+export function useArchive(): Archive {
+  return useStored<Archive>(ARCHIVE_KEY, EMPTY_ARCHIVE);
 }
 
 export function todayKey(d = new Date()): string {
@@ -143,6 +163,65 @@ export function todayKey(d = new Date()): string {
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
+}
+
+/**
+ * Keep today's session + the latest earlier one per exercise; fold the rest into
+ * the archive. Returns null when nothing needed trimming.
+ */
+function trimLogs(logs: Logs, archive: Archive, today: string): { logs: Logs; archive: Archive } | null {
+  let changed = false;
+  const out: Logs = {};
+  const dates = new Set(archive.dates);
+  let sets = archive.sets;
+  const bests = { ...archive.bests };
+
+  for (const [slug, sessions] of Object.entries(logs)) {
+    const sorted = [...sessions].filter((s) => s.sets.length).sort((a, b) => a.date.localeCompare(b.date));
+    const current = sorted.filter((s) => s.date >= today);
+    const earlier = sorted.filter((s) => s.date < today);
+    const previous = earlier.slice(-1);
+    const dropped = earlier.slice(0, -1);
+    if (dropped.length || sorted.length !== sessions.length) changed = true;
+    for (const d of dropped) {
+      dates.add(d.date);
+      sets += d.sets.length;
+      for (const set of d.sets) bests[slug] = betterSet(bests[slug], { ...set, date: d.date });
+    }
+    const kept = [...previous, ...current];
+    if (kept.length) out[slug] = kept;
+  }
+
+  if (!changed) return null;
+  return { logs: out, archive: { dates: [...dates].sort(), sets, bests } };
+}
+
+function trimStored() {
+  const result = trimLogs(read(LOGS_KEY, EMPTY_LOGS), read(ARCHIVE_KEY, EMPTY_ARCHIVE), todayKey());
+  if (!result) return;
+  try {
+    window.localStorage.setItem(ARCHIVE_KEY, JSON.stringify(result.archive));
+    window.localStorage.setItem(LOGS_KEY, JSON.stringify(result.logs));
+  } catch {
+    /* storage full or blocked */
+  }
+}
+
+// One-time migration on load: shrink any long history into previous + archive.
+if (typeof window !== "undefined") trimStored();
+
+/** The latest session before today (what to match or beat). */
+export function previousSession(sessions: Session[] | undefined, today: string | null): Session | undefined {
+  if (!sessions) return undefined;
+  const earlier = today ? sessions.filter((s) => s.date < today) : sessions;
+  return earlier[earlier.length - 1];
+}
+
+/** Best set for an exercise: archive merged with sessions still in the logs. */
+export function bestFor(slug: string, logs: Logs, archive: Archive): BestSet | null {
+  let best: BestSet | undefined = archive.bests[slug];
+  for (const s of logs[slug] ?? []) for (const set of s.sets) best = betterSet(best, { ...set, date: s.date });
+  return best ?? null;
 }
 
 export function saveSet(slug: string, index: number, set: LoggedSet | null) {
@@ -168,7 +247,13 @@ export function saveSet(slug: string, index: number, set: LoggedSet | null) {
   else sessions[i] = { date, sets: compact };
   if (sessions.length === 0) delete logs[slug];
   else logs[slug] = sessions;
-  write(LOGS_KEY, logs);
+  try {
+    window.localStorage.setItem(LOGS_KEY, JSON.stringify(logs));
+  } catch {
+    /* storage full or blocked */
+  }
+  trimStored();
+  emit();
 }
 
 export function clearExercise(slug: string) {
@@ -179,6 +264,7 @@ export function clearExercise(slug: string) {
 
 export function clearAll() {
   write(LOGS_KEY, {});
+  write(ARCHIVE_KEY, EMPTY_ARCHIVE);
   write(CARDIO_KEY, []);
 }
 
@@ -222,9 +308,10 @@ export function weeklyCardioMinutes(list: CardioEntry[], today: string | null) {
 export function exportData(): string {
   return JSON.stringify(
     {
-      version: 2,
+      version: 3,
       settings: read(SETTINGS_KEY, DEFAULT_SETTINGS),
       logs: read(LOGS_KEY, EMPTY_LOGS),
+      archive: read(ARCHIVE_KEY, EMPTY_ARCHIVE),
       cardio: read(CARDIO_KEY, EMPTY_CARDIO),
     },
     null,
@@ -233,9 +320,12 @@ export function exportData(): string {
 }
 
 export function importData(json: string) {
-  const data = JSON.parse(json) as { settings?: Settings; logs?: Logs; cardio?: CardioEntry[] };
+  const data = JSON.parse(json) as { settings?: Settings; logs?: Logs; archive?: Archive; cardio?: CardioEntry[] };
   if (!data || typeof data !== "object" || !data.logs) throw new Error("Not a RepWise backup file");
+  write(ARCHIVE_KEY, data.archive && Array.isArray(data.archive.dates) ? data.archive : EMPTY_ARCHIVE);
   write(LOGS_KEY, data.logs);
+  trimStored();
+  emit();
   if (data.settings) write(SETTINGS_KEY, data.settings);
   if (Array.isArray(data.cardio)) write(CARDIO_KEY, data.cardio);
 }

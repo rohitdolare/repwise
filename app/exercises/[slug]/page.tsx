@@ -274,7 +274,7 @@ export default async function ExercisePage({ params }: PageProps<"/exercises/[sl
             <h2 className="font-heading text-xl font-bold">Log this exercise</h2>
             <ExerciseLogger name={ex.name} load={ex.load} rx={rx} showLink={false} />
             <div className="rounded-2xl border bg-card p-4">
-              <h3 className="mb-3 font-heading font-bold">History</h3>
+              <h3 className="mb-3 font-heading font-bold">Your numbers</h3>
               <ExerciseHistory slug={ex.slug} />
             </div>
           </aside>
