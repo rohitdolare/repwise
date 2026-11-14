@@ -143,7 +143,32 @@
 @layer base {
   html {
     -webkit-tap-highlight-color: transparent;
-    scroll-padding-top: 5rem;
+    /* Header (+ notch) + sticky workout bar, so scrolled-to cards aren't hidden. */
+    scroll-padding-top: calc(7.5rem + env(safe-area-inset-top));
+    -webkit-text-size-adjust: 100%;
+  }
+  /* No double-tap-zoom delay on controls. */
+  a,
+  button,
+  input,
+  select,
+  label,
+  summary,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+  /* Tactile press feedback on touch screens (hover doesn't exist there). */
+  @media (hover: none) {
+    a,
+    button,
+    summary {
+      transition: transform 120ms ease;
+    }
+    a:active,
+    button:not(:disabled):active,
+    summary:active {
+      transform: scale(0.97);
+    }
   }
   h1, h2, h3 {
     font-family: var(--font-display);
@@ -165,6 +190,16 @@
 }
 .safe-top {
   padding-top: env(safe-area-inset-top);
+}
+/* Top offset for sticky bars that sit below the site header. */
+.top-header {
+  top: calc(3.5rem + env(safe-area-inset-top));
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 .hero-grid {

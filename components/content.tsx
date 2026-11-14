@@ -15,10 +15,10 @@ export function PageHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-6xl px-4 pt-8 pb-6 md:pt-12">
+    <div className="mx-auto max-w-6xl px-4 pt-5 pb-5 md:pt-12 md:pb-6">
       {eyebrow && <p className="mb-2 text-xs font-bold tracking-[0.18em] text-primary uppercase">{eyebrow}</p>}
-      <h1 className="font-heading text-3xl font-black text-balance md:text-5xl">{title}</h1>
-      {description && <p className="mt-3 max-w-2xl text-base text-pretty text-muted-foreground md:text-lg">{description}</p>}
+      <h1 className="font-heading text-[1.75rem] leading-tight font-black text-balance sm:text-3xl md:text-5xl">{title}</h1>
+      {description && <p className="mt-2 max-w-2xl text-base text-pretty text-muted-foreground md:mt-3 md:text-lg">{description}</p>}
       {children}
     </div>
   );

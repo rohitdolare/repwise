@@ -9,6 +9,7 @@ import { compareSet, recommend, type RecKind } from "@/lib/progression";
 import { previousSession, saveSet, useLogs, useSettings, useTodayKey } from "@/lib/store";
 import { formatRest, timer } from "@/lib/timer";
 import { primeAudio } from "@/lib/beep";
+import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 const recStyle: Record<RecKind, { icon: typeof TrendingUp; cls: string }> = {
@@ -75,8 +76,12 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
             )}
           </h3>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            {rx.sets} × {rx.repMin}–{rx.repMax}
-            {isTimed ? " s" : " reps"} · RIR {rx.rir} · Rest {formatRest(rx.restSec)}
+            <span className="whitespace-nowrap">
+              {rx.sets} × {rx.repMin}–{rx.repMax}
+              {isTimed ? " s" : " reps"}
+            </span>{" "}
+            · <span className="whitespace-nowrap">RIR {rx.rir}</span> ·{" "}
+            <span className="whitespace-nowrap">Rest {formatRest(rx.restSec)}</span>
           </p>
         </div>
         {showLink && (
@@ -150,6 +155,8 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
                   placeholder={bodyweight ? "0" : "—"}
                   value={wVal}
                   onChange={(e) => setDraft(i, { w: e.target.value })}
+                  onFocus={(e) => e.currentTarget.select()}
+                  enterKeyHint="done"
                   className="h-11 w-full min-w-0 rounded-lg border bg-background px-3 text-center font-mono text-base tabular-nums outline-none focus:border-primary"
                 />
                 <input
@@ -160,12 +167,15 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
                   placeholder={String(rec.targetReps[i] ?? rx.repMin)}
                   value={rVal}
                   onChange={(e) => setDraft(i, { r: e.target.value })}
+                  onFocus={(e) => e.currentTarget.select()}
+                  enterKeyHint="done"
                   className="h-11 w-full min-w-0 rounded-lg border bg-background px-3 text-center font-mono text-base tabular-nums outline-none placeholder:text-muted-foreground/60 focus:border-primary"
                 />
                 {logged ? (
                   <button
                     type="button"
                     onClick={() => {
+                      haptic(8);
                       saveSet(rx.slug, i, null);
                       setDrafts((all) => {
                         const next = { ...all };
@@ -183,11 +193,12 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
                   <button
                     type="button"
                     disabled={!canLog}
-                    onClick={() => {
+                    onClick={(e) => {
                       const reps = Number(rVal || sug.r);
                       const weight = Number(wVal || 0);
                       if (!Number.isFinite(reps) || reps <= 0) return;
                       primeAudio();
+                      haptic(15);
                       saveSet(rx.slug, i, { weight: Number.isFinite(weight) ? weight : 0, reps });
                       setDrafts((all) => {
                         const next = { ...all };
@@ -203,6 +214,11 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
                       });
                       const last = i + 1 >= rx.sets;
                       timer.start(rx.restSec, last ? `${name} done — next exercise` : `${name} · set ${i + 2} next`);
+                      if (last) {
+                        // Exercise finished: bring the next one into view (Today page).
+                        const nextCard = e.currentTarget.closest("article")?.nextElementSibling;
+                        setTimeout(() => nextCard?.scrollIntoView({ behavior: "smooth", block: "start" }), 450);
+                      }
                     }}
                     className="grid h-11 place-items-center rounded-lg border-2 border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:opacity-40"
                     aria-label={`Log set ${i + 1}`}

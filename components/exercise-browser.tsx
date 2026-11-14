@@ -32,7 +32,7 @@ export function ExerciseBrowser({
 
   return (
     <div className="space-y-6">
-      <div className="sticky top-14 z-30 -mx-4 space-y-3 bg-background/90 px-4 py-3 backdrop-blur-lg">
+      <div className="top-header sticky z-30 -mx-4 space-y-3 bg-background/90 px-4 py-3 backdrop-blur-lg">
         <label className="relative block">
           <Search className="absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <input

@@ -92,20 +92,20 @@ export default function Home() {
       <section className="relative overflow-hidden border-b">
         <div className="hero-grid pointer-events-none absolute inset-0" />
         <div className="pointer-events-none absolute -top-40 left-1/2 size-[36rem] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pt-14 pb-12 md:pt-20 md:pb-16 lg:grid-cols-[1.25fr_1fr]">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pt-8 pb-8 md:pt-20 md:pb-16 lg:grid-cols-[1.25fr_1fr]">
           <div>
-            <p className="mb-5 inline-flex items-center gap-2 rounded-full border bg-card/80 px-3 py-1 text-xs font-semibold tracking-wide backdrop-blur">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border bg-card/80 px-3 py-1 text-xs font-semibold tracking-wide backdrop-blur">
               <span className="size-1.5 rounded-full bg-primary" /> Your gym manual + workout coach
             </p>
-            <h1 className="font-heading text-5xl leading-[0.95] font-black text-balance md:text-7xl">
+            <h1 className="font-heading text-[2.5rem] leading-[0.95] font-black text-balance sm:text-5xl md:text-7xl">
               Don&apos;t just lift weights.
               <br />
               <span className="text-primary">Learn to train right.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg text-pretty text-muted-foreground">
+            <p className="mt-4 max-w-xl text-base text-pretty text-muted-foreground sm:mt-6 sm:text-lg">
               Understand your workouts, master exercise technique, and build strength with proven training principles.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
               <Link href="/today" className={cn(buttonVariants({ size: "lg" }), "h-12 px-6 text-base")}>
                 Start today&apos;s workout <ArrowRight />
               </Link>
@@ -121,7 +121,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl space-y-16 px-4 py-10 md:py-16">
+      <div className="mx-auto max-w-6xl space-y-12 px-4 py-6 md:space-y-16 md:py-16">
         {/* TODAY */}
         <section className="grid gap-4 md:grid-cols-[1.4fr_1fr]">
           <TodayPreview />
@@ -265,7 +265,7 @@ const heroShots = [
 
 function HeroCollage() {
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="hidden grid-cols-2 gap-3 sm:grid">
       {heroShots.map((h, i) => (
         <Link
           key={h.slug}

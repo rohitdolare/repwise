@@ -49,7 +49,7 @@ export function ScheduleEditor({
               value={schedule[i] ?? ""}
               onChange={(e) => change(i, e.target.value)}
               className={cn(
-                "h-9 w-48 rounded-lg border bg-background px-2 text-sm",
+                "h-11 w-44 rounded-lg border bg-background px-2 text-base",
                 schedule[i] ? "border-primary/60 font-semibold" : "text-muted-foreground",
               )}
             >

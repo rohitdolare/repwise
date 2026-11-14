@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   BedDouble,
@@ -39,10 +39,18 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
   const weekday = useWeekday();
   const todayIdx = weekday === null ? null : mondayIndex(weekday);
   const [picked, setPicked] = useState<{ day: number; workoutId?: string } | null>(null);
-  const [awake, setAwake] = useState(false);
+  // null = automatic: keep the screen on once the workout has started.
+  const [awakePref, setAwakePref] = useState<boolean | null>(null);
   const logs = useLogs();
   const today = useTodayKey();
-  useWakeLock(awake);
+  const stripRef = useRef<HTMLDivElement>(null);
+
+  // Scroll the week strip so "Today" is visible on narrow phones.
+  useEffect(() => {
+    const strip = stripRef.current;
+    const el = strip?.querySelector<HTMLElement>("[data-today]");
+    if (strip && el) strip.scrollLeft = el.offsetLeft - strip.clientWidth / 2 + el.clientWidth / 2;
+  }, [todayIdx]);
 
   if (todayIdx === null) {
     return <div className="h-96 animate-pulse rounded-2xl bg-muted" />;
@@ -59,11 +67,12 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
       return t + Math.min(e.sets, s?.sets.length ?? 0);
     }, 0) ?? 0;
   const pct = totalSets ? Math.round((doneSets / totalSets) * 100) : 0;
+  const awake = awakePref ?? (doneSets > 0 && pct < 100);
 
   return (
     <div className="space-y-6">
       {/* Week strip */}
-      <div className="-mx-4 overflow-x-auto px-4">
+      <div ref={stripRef} className="no-scrollbar -mx-4 overflow-x-auto scroll-smooth px-4">
         <ol className="flex min-w-max gap-2">
           {schedule.map((wid, i) => {
             const w = program.workouts.find((x) => x.id === wid);
@@ -72,6 +81,8 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
               <li key={i}>
                 <button
                   type="button"
+                  data-today={i === todayIdx ? "" : undefined}
+                  aria-pressed={active}
                   onClick={() => setPicked(i === todayIdx ? null : { day: i })}
                   className={cn(
                     "flex w-[4.5rem] flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-center transition-colors",
@@ -90,11 +101,11 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
           })}
         </ol>
       </div>
-      <div className="-mt-3 flex justify-end">
+      <div className="-mt-5 -mb-2 flex justify-end">
         <button
           type="button"
           onClick={() => setEditing((e) => !e)}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
+          className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
         >
           <CalendarCog className="size-4" /> {editing ? "Close" : "Change my training days"}
         </button>
@@ -113,7 +124,20 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
         <RestDay program={program} dayName={days[dayIdx]} onPick={(id) => setPicked({ day: dayIdx, workoutId: id })} />
       ) : (
         <>
-          <section className="relative overflow-hidden rounded-3xl border bg-card p-5 md:p-7">
+          <WakeLock on={awake} />
+          {/* Phone: compact progress that stays visible while you scroll through exercises. */}
+          <div className="top-header sticky z-30 -mx-4 border-b bg-background/90 px-4 py-2 backdrop-blur-lg md:hidden">
+            <div className="flex items-center justify-between gap-3 text-sm">
+              <span className="truncate font-heading font-bold">{workout.name}</span>
+              <span className="shrink-0 font-mono text-xs text-muted-foreground tabular-nums">
+                {doneSets}/{totalSets} sets · {pct}%
+              </span>
+            </div>
+            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
+              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+          <section className="relative -mt-3 overflow-hidden rounded-3xl border bg-card p-5 md:mt-0 md:p-7">
             <div className="hero-grid pointer-events-none absolute inset-0 opacity-60" />
             <div className="relative space-y-4">
               <div>
@@ -133,9 +157,9 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
                 {"wakeLock" in navigator && (
                   <button
                     type="button"
-                    onClick={() => setAwake((a) => !a)}
+                    onClick={() => setAwakePref(!awake)}
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-3 py-1 transition-colors",
+                      "inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 py-1 transition-colors",
                       awake ? "bg-primary text-primary-foreground" : "bg-muted",
                     )}
                   >
@@ -143,7 +167,7 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
                   </button>
                 )}
               </div>
-              <div>
+              <div className="hidden md:block">
                 <div className="mb-1.5 flex justify-between text-sm">
                   <span className="font-medium">Workout progress</span>
                   <span className="font-mono text-muted-foreground">
@@ -214,6 +238,11 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
       )}
     </div>
   );
+}
+
+function WakeLock({ on }: { on: boolean }) {
+  useWakeLock(on);
+  return null;
 }
 
 function RestDay({

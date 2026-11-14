@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, Timer, X } from "lucide-react";
 import { formatTime, timer, useTimer } from "@/lib/timer";
 import { beep } from "@/lib/beep";
+import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 /** Floating rest timer. Started automatically when a set is logged. */
@@ -20,6 +21,7 @@ export function RestTimer() {
       if (left <= 0 && firedFor.current !== endsAt) {
         firedFor.current = endsAt;
         beep();
+        haptic([200, 100, 200]);
         setTimeout(() => {
           // Only clear if no new timer has started meanwhile.
           if (firedFor.current === endsAt) timer.stop();
@@ -61,7 +63,7 @@ export function RestTimer() {
               <button
                 type="button"
                 onClick={() => timer.add(-15)}
-                className="grid size-10 place-items-center rounded-full bg-muted text-sm font-semibold"
+                className="grid size-11 place-items-center rounded-full bg-muted text-sm font-semibold"
                 aria-label="Subtract 15 seconds"
               >
                 <Minus className="size-4" />
@@ -69,7 +71,7 @@ export function RestTimer() {
               <button
                 type="button"
                 onClick={() => timer.add(15)}
-                className="grid size-10 place-items-center rounded-full bg-muted text-sm font-semibold"
+                className="grid size-11 place-items-center rounded-full bg-muted text-sm font-semibold"
                 aria-label="Add 15 seconds"
               >
                 <Plus className="size-4" />
@@ -79,7 +81,7 @@ export function RestTimer() {
           <button
             type="button"
             onClick={() => timer.stop()}
-            className="grid size-10 place-items-center rounded-full bg-primary text-primary-foreground"
+            className="grid size-11 place-items-center rounded-full bg-primary text-primary-foreground"
             aria-label="Dismiss timer"
           >
             <X className="size-4" />

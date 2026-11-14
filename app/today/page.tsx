@@ -13,7 +13,7 @@ export default function TodayPage() {
   return (
     <>
       <PageHeader eyebrow="Workout coach" title="Today's workout">
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 hidden text-sm text-muted-foreground sm:block">
           Log each set as you go. Want a different split?{" "}
           <Link href="/routine" className="font-medium text-foreground underline underline-offset-4">
             Change plan

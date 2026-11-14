@@ -22,13 +22,13 @@ export function BottomNav() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 py-2 text-[0.68rem] font-medium text-muted-foreground transition-colors",
+                  "flex min-h-14 flex-col items-center justify-center gap-0.5 py-1.5 text-[0.7rem] font-medium text-muted-foreground transition-colors",
                   active && "text-foreground",
                 )}
               >
                 <span
                   className={cn(
-                    "grid h-7 w-12 place-items-center rounded-full transition-colors",
+                    "grid h-8 w-14 place-items-center rounded-full transition-colors",
                     active && "bg-primary text-primary-foreground",
                   )}
                 >
