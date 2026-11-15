@@ -65,7 +65,7 @@ export default async function ExercisePage({ params }: PageProps<"/exercises/[sl
       </Link>
 
       {/* 1. Overview */}
-      <header className="mb-6 grid items-center gap-6 lg:grid-cols-2">
+      <header className="mb-6 grid grid-cols-1 items-center gap-6 lg:grid-cols-2">
         <div>
           <div className="mb-3 flex flex-wrap gap-2">
             <Badge>{group?.label}</Badge>
@@ -100,7 +100,7 @@ export default async function ExercisePage({ params }: PageProps<"/exercises/[sl
         ))}
       </dl>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_24rem]">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="space-y-6">
           <Section n={2} title="Target muscles">
             {visual && (

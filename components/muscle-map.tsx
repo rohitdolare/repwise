@@ -14,13 +14,13 @@ export function MuscleMap({ primary, secondary, size = "md" }: { primary: Muscle
   return (
     <div className="flex items-start justify-center gap-4">
       {(["anterior", "posterior"] as const).map((type) => (
-        <div key={type} className="text-center">
+        <div key={type} className="min-w-0 flex-1 text-center" style={{ maxWidth: width }}>
           <Model
             type={type}
             data={data}
             bodyColor="color-mix(in oklch, var(--foreground) 14%, transparent)"
             highlightedColors={colors}
-            style={{ width, pointerEvents: "none" }}
+            style={{ width: "100%", pointerEvents: "none" }}
           />
           {size === "md" && <p className="mt-1 text-xs text-muted-foreground">{type === "anterior" ? "Front" : "Back"}</p>}
         </div>

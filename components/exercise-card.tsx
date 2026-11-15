@@ -13,7 +13,7 @@ export function ExerciseCard({ exercise }: { exercise: ExerciseSummary }) {
   return (
     <Link
       href={`/exercises/${exercise.slug}`}
-      className="group flex items-center gap-4 rounded-2xl border bg-card p-3 transition-colors hover:border-primary/50"
+      className="group flex min-w-0 items-center gap-3 rounded-2xl sm:gap-4 border bg-card p-3 transition-colors hover:border-primary/50"
     >
       <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted sm:size-24">
         <Image
@@ -26,7 +26,7 @@ export function ExerciseCard({ exercise }: { exercise: ExerciseSummary }) {
         />
       </div>
       <div className="min-w-0 flex-1 space-y-1.5">
-        <h3 className="font-heading font-bold">{exercise.name}</h3>
+        <h3 className="font-heading leading-tight font-bold">{exercise.name}</h3>
         <p className="truncate text-sm text-muted-foreground">{exercise.primary.join(", ")}</p>
         <div className="flex flex-wrap gap-1.5">
           {exercise.cardio ? (
@@ -39,7 +39,9 @@ export function ExerciseCard({ exercise }: { exercise: ExerciseSummary }) {
               {exercise.prescription.sets} × {exercise.prescription.reps}
             </Badge>
           )}
-          <Badge variant="outline">{exercise.equipment[0]}</Badge>
+          <Badge variant="outline" className="max-w-full">
+            <span className="truncate">{exercise.equipment[0]}</span>
+          </Badge>
           {exercise.level === "Beginner" && <Badge variant="outline">Beginner-friendly</Badge>}
         </div>
       </div>

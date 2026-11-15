@@ -39,7 +39,7 @@ export function ExerciseBrowser({
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search exercise, muscle or equipment…"
+            placeholder="Search exercise or muscle…"
             className="h-12 w-full rounded-xl border bg-card pr-10 pl-10 text-base outline-none focus:border-primary"
           />
           {q && (
@@ -80,7 +80,7 @@ export function ExerciseBrowser({
             <h2 className="font-heading text-xl font-bold">{g.label}</h2>
             <p className="text-sm text-muted-foreground">{g.blurb}</p>
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {filtered
               .filter((e) => e.group === g.id)
               .map((e) => (

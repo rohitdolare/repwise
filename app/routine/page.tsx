@@ -69,10 +69,10 @@ export default function RoutinePage() {
               </Link>
             </div>
 
-            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
               {p.workouts.map((w) => (
-                <div key={w.id} className="rounded-2xl border p-4">
-                  <div className="mb-3 flex items-baseline justify-between gap-2">
+                <div key={w.id} className="min-w-0 rounded-2xl border p-4">
+                  <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
                     <h3 className="font-heading text-lg font-bold">{w.name}</h3>
                     <span className="text-xs text-muted-foreground">{w.focus}</span>
                   </div>
