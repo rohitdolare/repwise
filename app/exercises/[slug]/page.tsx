@@ -7,6 +7,7 @@ import { programs } from "@/content/programs";
 import type { Exercise, Prescription } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { ExerciseLogger } from "@/components/exercise-logger";
+import { harderOf } from "@/lib/exercise-meta";
 import { ExerciseHistory } from "@/components/exercise-history";
 import { ExerciseMedia } from "@/components/exercise-media";
 import { videos } from "@/content/videos";
@@ -272,7 +273,14 @@ export default async function ExercisePage({ params }: PageProps<"/exercises/[sl
         ) : (
           <aside id="log" className="space-y-4 lg:sticky lg:top-20 lg:self-start">
             <h2 className="font-heading text-xl font-bold">Log this exercise</h2>
-            <ExerciseLogger name={ex.name} load={ex.load} rx={rx} showLink={false} />
+            <ExerciseLogger
+              name={ex.name}
+              load={ex.load}
+              timed={ex.timed}
+              harder={harderOf(ex.slug)}
+              rx={rx}
+              showLink={false}
+            />
             <div className="rounded-2xl border bg-card p-4">
               <h3 className="mb-3 font-heading font-bold">Your numbers</h3>
               <ExerciseHistory slug={ex.slug} />

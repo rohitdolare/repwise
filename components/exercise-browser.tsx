@@ -1,10 +1,23 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Search, X } from "lucide-react";
+import { useMemo, useState, useSyncExternalStore } from "react";
+import { Home, Search, X } from "lucide-react";
 import type { MuscleGroup } from "@/lib/types";
 import { ExerciseCard, type ExerciseSummary } from "./exercise-card";
 import { cn } from "@/lib/utils";
+
+// The "Home-friendly" filter lives in the URL hash (#home) so other pages can link to it.
+const subscribeHash = (cb: () => void) => {
+  window.addEventListener("hashchange", cb);
+  return () => window.removeEventListener("hashchange", cb);
+};
+const readHome = () => window.location.hash === "#home";
+
+function setHomeFilter(on: boolean) {
+  const url = on ? "#home" : window.location.pathname + window.location.search;
+  history.replaceState(null, "", url);
+  window.dispatchEvent(new HashChangeEvent("hashchange"));
+}
 
 export function ExerciseBrowser({
   items,
@@ -15,18 +28,20 @@ export function ExerciseBrowser({
 }) {
   const [q, setQ] = useState("");
   const [group, setGroup] = useState<MuscleGroup | "all">("all");
+  const homeOnly = useSyncExternalStore(subscribeHash, readHome, () => false);
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return items.filter(
       (e) =>
         (group === "all" || e.group === group) &&
+        (!homeOnly || e.home) &&
         (!needle ||
           e.name.toLowerCase().includes(needle) ||
           e.primary.some((m) => m.toLowerCase().includes(needle)) ||
           e.equipment.some((m) => m.toLowerCase().includes(needle))),
     );
-  }, [items, q, group]);
+  }, [items, q, group, homeOnly]);
 
   const shownGroups = groups.filter((g) => filtered.some((e) => e.group === g.id));
 
@@ -53,7 +68,19 @@ export function ExerciseBrowser({
             </button>
           )}
         </label>
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4">
+        <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
+          <button
+            type="button"
+            aria-pressed={homeOnly}
+            onClick={() => setHomeFilter(!homeOnly)}
+            className={cn(
+              "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors",
+              homeOnly ? "border-primary bg-primary text-primary-foreground" : "border-primary/50 bg-card text-primary",
+            )}
+          >
+            <Home className="size-3.5" /> Home-friendly
+          </button>
+          <span className="w-px shrink-0 bg-border" aria-hidden />
           {[{ id: "all" as const, label: "All" }, ...groups].map((g) => (
             <button
               key={g.id}
@@ -71,7 +98,9 @@ export function ExerciseBrowser({
       </div>
 
       {shownGroups.length === 0 && (
-        <p className="py-10 text-center text-muted-foreground">No exercises match “{q}”.</p>
+        <p className="py-10 text-center text-muted-foreground">
+          {q ? <>No exercises match “{q}”.</> : "No home-friendly exercises in this group yet."}
+        </p>
       )}
 
       {shownGroups.map((g) => (

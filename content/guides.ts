@@ -379,3 +379,117 @@ export const coreGuide: Guide = {
   ],
   references: [refs.spotReduction, refs.acsm],
 };
+
+export const homeGuide: Guide = {
+  title: "Home Workouts",
+  tagline: "Build muscle and strength at home with zero equipment — just the floor, a chair, a table and a step.",
+  sections: [
+    {
+      id: "does-it-work",
+      title: "Does bodyweight training really build muscle?",
+      blocks: [
+        {
+          type: "p",
+          text: "Yes. Research comparing light and heavy loads shows that muscle growth is similar across a wide range of reps — roughly 6 to 30+ — as long as sets are taken close to failure. Your muscles respond to effort, not to where the resistance comes from.",
+        },
+        {
+          type: "callout",
+          tone: "tip",
+          title: "The one rule",
+          text: "Finish most sets with only 0–2 reps left in the tank. 15 easy squats do little; 15 squats where the last 3 are a real struggle build muscle.",
+        },
+        {
+          type: "p",
+          text: "Where home training falls short is maximal strength on heavy lifts and very strong legs, which eventually need load. Until then — and for most people, for a long time — bodyweight is plenty.",
+        },
+      ],
+    },
+    {
+      id: "progress",
+      title: "How to progress without adding weight",
+      blocks: [
+        { type: "p", text: "At the gym you add plates. At home, make the same movement harder, in this order:" },
+        {
+          type: "list",
+          ordered: true,
+          items: [
+            "Add reps — until you hit the top of the rep range on every set (RepWise tracks this for you).",
+            "Slow down — 3 seconds on the way down makes any exercise much harder.",
+            "Add pauses — hold 1–2 seconds at the hardest point (bottom of a squat or push-up).",
+            "Increase range — deficit push-ups between two books, deeper split squats with the front foot on a step.",
+            "Change leverage — move to the next variation in the ladder (below). Start each new variation at the bottom of the rep range.",
+            "Go single-leg / single-arm — the biggest jump: twice the load on one limb.",
+          ],
+        },
+        {
+          type: "callout",
+          text: "When you hit the top of the rep range on every set, RepWise suggests the next variation on the Today screen. Try it for your first set; switch for good once you can do the bottom of the range.",
+        },
+      ],
+    },
+    {
+      id: "ladders",
+      title: "Variation ladders",
+      blocks: [
+        {
+          type: "p",
+          text: "Each row goes from easier to harder. Find the step where you can do the plan's rep range with good form.",
+        },
+        {
+          type: "table",
+          head: ["Pattern", "Easier → harder"],
+          rows: [
+            ["Push (chest)", "Incline push-up → Push-up → Decline push-up → Pike push-up"],
+            ["Triceps", "Chair dip (knees bent) → Chair dip (legs straight) → Diamond push-up"],
+            ["Squat (legs)", "Bodyweight squat → Split squat → Reverse lunge → Bulgarian split squat"],
+            ["Hinge (glutes, hamstrings)", "Glute bridge → Single-leg glute bridge → Single-leg RDL"],
+            [
+              "Pull (back)",
+              "Superman → Table row (knees bent) → Table row (legs straight) → Pull-up (if you get a bar)",
+            ],
+            ["Core", "Dead bug → Plank → Side plank → Reverse crunch"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "setup",
+      title: "Set up a safe home space",
+      blocks: [
+        {
+          type: "list",
+          items: [
+            "About 2 × 2 m of clear floor; a mat or carpet for floor work.",
+            "A sturdy chair pushed against a wall — for dips, step-ups and Bulgarian split squats.",
+            "A heavy, solid table for rows. Test it first: it must not tip or slide when you hang from the edge.",
+            "A stair or step for calf raises.",
+            "Shoes with grip, or bare feet — never socks on a smooth floor.",
+          ],
+        },
+        {
+          type: "callout",
+          tone: "warn",
+          title: "Furniture safety",
+          text: "Never row under a folding, glass or light table, and never step onto a chair with wheels. If you are unsure your table is strong enough, do supermans for your back instead.",
+        },
+      ],
+    },
+    {
+      id: "week",
+      title: "Your home week",
+      blocks: [
+        {
+          type: "list",
+          items: [
+            "Pick a home plan below (or on the Plan tab) and choose your own training days.",
+            "Warm up for 5 minutes: march or jog in place, arm circles, slow squats and hip openers.",
+            "On rest days, walk 30–45 minutes outdoors or do the Home Express Circuit.",
+            "Eat enough protein (1.6–2.2 g per kg of bodyweight) and sleep 7–9 hours — same as at the gym.",
+            "Back at the gym some weeks? Switch plans any time; your numbers are kept per exercise.",
+          ],
+        },
+      ],
+    },
+  ],
+  references: [refs.loads, refs.failure, refs.acsm],
+};

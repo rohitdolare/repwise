@@ -181,4 +181,58 @@ export const visuals: Record<string, ExerciseVisual> = {
     primary: ["front-deltoids"],
     secondary: ["biceps", "triceps", "forearm", "abs"],
   },
+
+  // ───────────── Home (bodyweight) ─────────────
+  "bodyweight-squat": {
+    source: "Bodyweight_Squat",
+    primary: ["quadriceps", "gluteal"],
+    secondary: ["adductor", "abs"],
+  },
+  "split-squat": { source: "Split_Squats", primary: ["quadriceps", "gluteal"], secondary: ["adductor", "hamstring"] },
+  "reverse-lunge": {
+    source: "Crossover_Reverse_Lunge",
+    primary: ["quadriceps", "gluteal"],
+    secondary: ["hamstring", "adductor"],
+    note: "Photo shows a crossover lunge — for this exercise, step straight back.",
+  },
+  "step-up": {
+    source: "Step-up_with_Knee_Raise",
+    primary: ["quadriceps", "gluteal"],
+    secondary: ["hamstring", "calves"],
+    note: "Photo uses a gym box and adds a knee raise — a sturdy chair or stair works the same.",
+  },
+  "glute-bridge": { source: "Butt_Lift_Bridge", primary: ["gluteal"], secondary: ["hamstring", "abs"] },
+  "single-leg-rdl": {
+    source: "Kettlebell_One-Legged_Deadlift",
+    primary: ["hamstring", "gluteal"],
+    secondary: ["lower-back"],
+    note: "Photo shows a kettlebell — do it with no weight, holding a wall if needed.",
+  },
+  "single-leg-calf-raise": {
+    source: "Calf_Raise_On_A_Dumbbell",
+    primary: ["calves"],
+    secondary: [],
+    note: "Photo shows a raised platform — use the edge of a stair, one leg at a time.",
+  },
+  "incline-push-up": { source: "Incline_Push-Up", primary: ["chest"], secondary: ["triceps", "front-deltoids", "abs"] },
+  "decline-push-up": { source: "Decline_Push-Up", primary: ["chest", "front-deltoids"], secondary: ["triceps", "abs"] },
+  "diamond-push-up": {
+    source: "Push-Ups_-_Close_Triceps_Position",
+    primary: ["triceps"],
+    secondary: ["chest", "front-deltoids"],
+  },
+  "chair-dip": { source: "Bench_Dips", primary: ["triceps"], secondary: ["chest", "front-deltoids"] },
+  "pike-push-up": {
+    source: "Handstand_Push-Ups",
+    primary: ["front-deltoids"],
+    secondary: ["triceps", "trapezius"],
+    note: "Photo shows the advanced wall handstand version — for pike push-ups keep your feet on the floor and hips high.",
+  },
+  "inverted-row": {
+    source: "Inverted_Row",
+    primary: ["upper-back", "trapezius"],
+    secondary: ["biceps", "back-deltoids"],
+    note: "Photo uses a bar — at home, lie under a sturdy table and grip its edge.",
+  },
+  superman: { source: "Superman", primary: ["lower-back", "gluteal"], secondary: ["upper-back", "hamstring"] },
 };

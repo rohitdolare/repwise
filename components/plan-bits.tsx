@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
-import { days, daysShort, getProgram, mondayIndex } from "@/content/programs";
+import { days, daysShort, getProgram, mondayIndex, shortWorkoutName } from "@/content/programs";
 import { isCustomSchedule, updateSettings, useHasChosenPlan, useSchedule, useSettings, useWeekday } from "@/lib/store";
 import type { Program } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -80,7 +80,7 @@ export function PlanWeek({ program }: { program: Program }) {
           return (
             <li key={i} className={cn("rounded-xl px-1 py-2.5 text-center", w ? "bg-primary/15" : "bg-muted/60")}>
               <p className="text-[0.65rem] font-semibold text-muted-foreground uppercase">{daysShort[i]}</p>
-              <p className="mt-0.5 truncate text-xs font-bold">{w ? w.name.replace("Full Body ", "FB ") : "Rest"}</p>
+              <p className="mt-0.5 truncate text-xs font-bold">{w ? shortWorkoutName(w.name) : "Rest"}</p>
             </li>
           );
         })}

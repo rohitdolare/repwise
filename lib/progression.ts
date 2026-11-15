@@ -12,6 +12,8 @@ export type RecKind = "start" | "increase" | "build" | "reduce" | "bodyweight-up
 
 export interface Recommendation {
   kind: RecKind;
+  /** Harder variation to move to (bodyweight ladder). */
+  next?: { slug: string; name: string };
   weight: number | null;
   targetReps: number[];
   headline: string;
@@ -32,7 +34,6 @@ export function increment(load: LoadType, weight: number, unit: Unit): number {
   }
 }
 
-
 /**
  * Double progression against the PREVIOUS session only:
  *  - No previous → suggested beginner start weight.
@@ -45,11 +46,12 @@ export function recommend(
   load: LoadType,
   previous: Session | undefined,
   unit: Unit,
+  harder?: { slug: string; name: string },
 ): Recommendation {
   const bottom = Array(target.sets).fill(target.repMin);
 
   if (!previous || previous.sets.length === 0) {
-    const start = target.slug ? startWeight(target.slug, unit) : null;
+    const start = target.slug && load !== "bodyweight" ? startWeight(target.slug, unit) : null;
     if (!start) {
       return {
         kind: "start",
@@ -76,13 +78,23 @@ export function recommend(
 
   if (allTop) {
     if (load === "bodyweight" || weight === 0) {
+      if (harder) {
+        return {
+          kind: "bodyweight-up",
+          weight: weight || null,
+          targetReps: reps,
+          next: harder,
+          headline: `Ready for ${harder.name}`,
+          detail: `You hit ${target.repMax} on every set. Try ${harder.name} for your first set next time — if you get ${target.repMin}+ good reps, switch to it for good. Until then, match these reps with a slower 3-second lowering.`,
+        };
+      }
       return {
         kind: "bodyweight-up",
         weight: weight || null,
-        targetReps: bottom,
+        targetReps: reps,
         headline: "Top of the range — make it harder",
         detail:
-          "You hit every set at the top of the range. Add load (vest, belt or dumbbell), slow the tempo, or move to a harder variation, then build reps again.",
+          "You hit every set at the top of the range. Slow the lowering to 3 seconds, add a pause at the hardest point, or add load (backpack, vest or dumbbell), then build reps again.",
       };
     }
     const inc = increment(load, weight, unit);

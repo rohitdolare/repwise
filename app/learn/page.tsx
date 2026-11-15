@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Apple, ArrowRight, Flame, HeartPulse, Ruler, Target, TrendingUp } from "lucide-react";
+import { Apple, ArrowRight, Flame, HeartPulse, Home, Ruler, Target, TrendingUp } from "lucide-react";
 import { PageHeader } from "@/components/content";
 import { InstallApp } from "@/components/install-app";
 import { principles } from "@/content/principles";
@@ -45,6 +45,13 @@ const guides = [
     text: "The four core functions, best exercises and a 10-min finisher.",
     icon: Target,
     n: "08",
+  },
+  {
+    href: "/home-workouts",
+    title: "Home Workouts",
+    text: "No-equipment plans, variation ladders and guided circuits.",
+    icon: Home,
+    n: "09",
   },
 ];
 

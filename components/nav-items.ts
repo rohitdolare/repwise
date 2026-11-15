@@ -15,13 +15,21 @@ export const learnSections = [
   { href: "/nutrition", label: "Nutrition" },
   { href: "/cardio", label: "Cardio & Conditioning" },
   { href: "/core", label: "Abs & Core" },
+  { href: "/home-workouts", label: "Home Workouts" },
 ];
 
 export function isActive(pathname: string, href: string) {
   if (href === "/learn") {
-    return ["/learn", "/principles", "/form-guide", "/recovery", "/nutrition", "/cardio", "/core"].some((p) =>
-      pathname.startsWith(p),
-    );
+    return [
+      "/learn",
+      "/principles",
+      "/form-guide",
+      "/recovery",
+      "/nutrition",
+      "/cardio",
+      "/core",
+      "/home-workouts",
+    ].some((p) => pathname.startsWith(p));
   }
   return pathname === href || pathname.startsWith(href + "/");
 }

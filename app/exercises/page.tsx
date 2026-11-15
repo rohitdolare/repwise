@@ -9,7 +9,8 @@ export const metadata: Metadata = {
 };
 
 export default function ExercisesPage() {
-  const items = exercises.map(({ slug, name, group, primary, equipment, level, prescription, cardio }) => ({
+  const items = exercises.map(({ slug, name, group, primary, equipment, level, prescription, cardio, home }) => ({
+    ...(home ? { home } : {}),
     slug,
     name,
     group,

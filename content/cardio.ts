@@ -14,7 +14,7 @@ export interface Phase {
 export interface CardioWorkout {
   id: string;
   name: string;
-  type: "Zone 2" | "Intervals" | "HIIT" | "Sprint" | "Core";
+  type: "Zone 2" | "Intervals" | "HIIT" | "Sprint" | "Core" | "Circuit";
   level: "Beginner" | "Intermediate" | "Advanced";
   summary: string;
   why: string;
@@ -200,6 +200,35 @@ export const cardioWorkouts: CardioWorkout[] = [
       { label: "Cool-down", sec: m(2), kind: "cool", cue: "Walk around, slow your breathing" },
     ],
     references: [refs.hiit],
+  },
+  {
+    id: "home-express",
+    name: "Home Express Circuit",
+    type: "Circuit",
+    level: "Beginner",
+    summary:
+      "A full-body bodyweight circuit in about 25 minutes: 3 rounds of 6 moves, 40 s on / 20 s off. No equipment.",
+    why: "When you only have 25 minutes and a bit of floor, this hits legs, push, back and core while keeping your heart rate up — strength and conditioning in one.",
+    intensity: "Work: RPE 7–8 · steady, clean reps",
+    howOften: "1–2× per week on a rest day, or any day you can't do a full session.",
+    equipment: ["bodyweight-squat", "push-up", "reverse-lunge", "superman", "mountain-climber", "plank"],
+    phases: [
+      { label: "Warm-up", sec: m(3), kind: "warm", cue: "March in place, arm circles, 10 slow squats, hip openers" },
+      ...circuit(
+        3,
+        [
+          { label: "Bodyweight squats", slug: "bodyweight-squat", work: 40, rest: 20, cue: "Full depth, steady pace" },
+          { label: "Push-ups", slug: "push-up", work: 40, rest: 20, cue: "Hands on a table if needed" },
+          { label: "Reverse lunges", slug: "reverse-lunge", work: 40, rest: 20, cue: "Alternate legs" },
+          { label: "Supermans", slug: "superman", work: 40, rest: 20, cue: "Squeeze 2 s at the top" },
+          { label: "Mountain climbers", slug: "mountain-climber", work: 40, rest: 20, cue: "Hips down, quick feet" },
+          { label: "Plank", slug: "plank", work: 40, rest: 0, cue: "Glutes tight, ribs down" },
+        ],
+        60,
+      ),
+      { label: "Cool-down", sec: m(2), kind: "cool", cue: "Walk around, slow your breathing, stretch" },
+    ],
+    references: [refs.loads, refs.hiit],
   },
   {
     id: "core-finisher",

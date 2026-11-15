@@ -26,7 +26,12 @@ export default async function CardioSessionPage({ params }: PageProps<"/cardio/[
   const { id } = await params;
   const w = getCardioWorkout(id);
   if (!w) notFound();
-  const back = w.type === "Core" ? { href: "/core", label: "Abs & Core" } : { href: "/cardio", label: "Cardio" };
+  const back =
+    w.type === "Core"
+      ? { href: "/core", label: "Abs & Core" }
+      : w.type === "Circuit"
+        ? { href: "/home-workouts", label: "Home Workouts" }
+        : { href: "/cardio", label: "Cardio" };
 
   return (
     <div className="mx-auto max-w-6xl px-4 pt-6">
@@ -91,7 +96,7 @@ export default async function CardioSessionPage({ params }: PageProps<"/cardio/[
           </div>
           <div className="rounded-2xl border bg-card p-5">
             <h2 className="mb-3 font-heading font-bold">
-              {w.type === "Core" || w.id === "hiit-circuit" ? "Exercises" : "Do it on"}
+              {w.type === "Core" || w.type === "Circuit" || w.id === "hiit-circuit" ? "Exercises" : "Do it on"}
             </h2>
             <div className="grid grid-cols-2 gap-2">
               {w.equipment.map((slug) => (

@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Home } from "lucide-react";
 import type { Exercise } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 
 export type ExerciseSummary = Pick<
   Exercise,
-  "slug" | "name" | "group" | "primary" | "equipment" | "level" | "prescription" | "cardio"
+  "slug" | "name" | "group" | "primary" | "equipment" | "level" | "prescription" | "cardio" | "home"
 >;
 
 export function ExerciseCard({ exercise }: { exercise: ExerciseSummary }) {
@@ -42,6 +42,11 @@ export function ExerciseCard({ exercise }: { exercise: ExerciseSummary }) {
           <Badge variant="outline" className="max-w-full">
             <span className="truncate">{exercise.equipment[0]}</span>
           </Badge>
+          {exercise.home && (
+            <Badge variant="outline" className="border-primary/40 text-primary">
+              <Home /> Home
+            </Badge>
+          )}
           {exercise.level === "Beginner" && <Badge variant="outline">Beginner-friendly</Badge>}
         </div>
       </div>

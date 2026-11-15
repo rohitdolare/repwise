@@ -59,4 +59,20 @@ export const videos: Record<string, ExerciseVideo> = {
   "kettlebell-swing": { id: "LBhaLLc153A", title: "The Kettlebell Swing Technique Everyone Gets WRONG!", channel: "Squat University" },
   "jump-squat": { id: "lCxMeAhj8A0", title: "ACL Injury Prevention: Jumping and Landing Technique", channel: "Hospital for Special Surgery" },
   "battle-ropes": { id: "pQb2xIGioyQ", title: "Battle Ropes for Beginners (Use Battling Ropes like a Pro!)", channel: "Criticalbench" },
+
+  // Home (bodyweight)
+  "bodyweight-squat": { id: "eWatHIujxPM", title: "How to Do a Bodyweight Squat (Perfect Form + Common Mistakes)", channel: "Over The Hill Athlete" },
+  "split-squat": { id: "Ft-NS5Ogti0", title: "Split Squat – Proper Form Tutorial (Beginner Friendly)", channel: "6th Pillar Coaching" },
+  "reverse-lunge": { id: "ALl174GTuoY", title: "Reverse Lunge Form for Beginners (Step-by-Step)", channel: "Steve & Latifah | Fitness" },
+  "step-up": { id: "WCFCdxzFBa4", title: "How to do the STEP UP: technique and common mistakes", channel: "Get Exercise Confident" },
+  "glute-bridge": { id: "KI6fjDqGZh4", title: "Glute Bridge: How To (3 steps to proper form)", channel: "Born Fitness" },
+  "single-leg-rdl": { id: "Zfr6wizR8rs", title: "The BEST Single-Leg RDL Tutorial (Romanian Deadlift)", channel: "Squat University" },
+  "single-leg-calf-raise": { id: "_rKgZMP1X5o", title: "Single Leg Calf Raise (Exercise Library)", channel: "Horton Barbell" },
+  "incline-push-up": { id: "0JUrOH--Kdk", title: "How to do an Incline Push-Up | Proper Form & Technique | NASM", channel: "National Academy of Sports Medicine (NASM)" },
+  "decline-push-up": { id: "aq2xZxfrQlM", title: "How to do a Decline Push-Up", channel: "National Academy of Sports Medicine (NASM)" },
+  "diamond-push-up": { id: "_4EGPVJuqfA", title: "Diamond Push-Ups Tutorial (with correct form)", channel: "Tykato Fitness" },
+  "chair-dip": { id: "WVeZDBhZwLA", title: "How to do a Bench Dip | Proper Form & Technique | NASM", channel: "National Academy of Sports Medicine (NASM)" },
+  "pike-push-up": { id: "2b5t0Cu2nQI", title: "How to do a Pike Push-Up | Proper Form & Technique | NASM", channel: "National Academy of Sports Medicine (NASM)" },
+  "inverted-row": { id: "6NTruShwwKk", title: "Stronger Back at Home! How to Do Inverted Rows with a Table", channel: "Abel Hailemikiel" },
+  "superman": { id: "UXUGfiNL1lI", title: "How to PROPERLY Do a Superman Exercise (FIX YOUR FORM)", channel: "Colossus Fitness" },
 };

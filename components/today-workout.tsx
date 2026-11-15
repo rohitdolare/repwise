@@ -15,7 +15,7 @@ import {
   Target,
 } from "lucide-react";
 import { WeeklyCardio } from "./cardio-widgets";
-import { days, daysShort, getProgram, mondayIndex } from "@/content/programs";
+import { days, daysShort, getProgram, mondayIndex, shortWorkoutName } from "@/content/programs";
 import { isCustomSchedule, useLogs, useSchedule, useSettings, useTodayKey, useWeekday } from "@/lib/store";
 import { ScheduleEditor } from "./schedule-editor";
 import type { LoadType, WorkoutDay } from "@/lib/types";
@@ -24,7 +24,10 @@ import { useWakeLock } from "@/lib/wake-lock";
 import { cn } from "@/lib/utils";
 
 /** Minimal info about each exercise the client needs (keeps the full library out of the bundle). */
-export type ExerciseMeta = Record<string, { name: string; load: LoadType }>;
+export type ExerciseMeta = Record<
+  string,
+  { name: string; load: LoadType; timed?: boolean; harder?: { slug: string; name: string } }
+>;
 
 function estimateMinutes(w: WorkoutDay) {
   const sec = w.exercises.reduce((t, e) => t + e.sets * (45 + e.restSec), 0);
@@ -92,9 +95,7 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
                   <span className={cn("text-[0.7rem] font-semibold uppercase", !active && "text-muted-foreground")}>
                     {i === todayIdx ? "Today" : daysShort[i]}
                   </span>
-                  <span className="w-full truncate text-xs font-bold">
-                    {w ? w.name.replace("Full Body ", "FB ") : "Rest"}
-                  </span>
+                  <span className="w-full truncate text-xs font-bold">{w ? shortWorkoutName(w.name) : "Rest"}</span>
                 </button>
               </li>
             );
@@ -202,7 +203,10 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
               <Flame className="size-4" />
             </span>
             <span>
-              <b>Warm up first:</b> 5 min light cardio, dynamic mobility, then 2–4 ramp-up sets on your first lift.
+              <b>Warm up first:</b>{" "}
+              {program.setting === "home"
+                ? "5 min — march or jog in place, arm circles, 10 slow squats and hip openers."
+                : "5 min light cardio, dynamic mobility, then 2–4 ramp-up sets on your first lift."}
             </span>
           </Link>
 
@@ -211,7 +215,15 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
               const m = meta[rx.slug];
               if (!m) return null;
               return (
-                <ExerciseLogger key={`${workout.id}-${rx.slug}-${i}`} index={i} name={m.name} load={m.load} rx={rx} />
+                <ExerciseLogger
+                  key={`${workout.id}-${rx.slug}-${i}`}
+                  index={i}
+                  name={m.name}
+                  load={m.load}
+                  timed={m.timed}
+                  harder={m.harder}
+                  rx={rx}
+                />
               );
             })}
           </div>
@@ -287,24 +299,54 @@ function RestDay({
             Easy cardio on rest days builds your engine and speeds recovery.
           </p>
         </div>
-        <Link
-          href="/cardio/zone2"
-          className="flex items-center gap-3 rounded-xl border border-primary/50 bg-primary/10 p-4 hover:bg-primary/15"
-        >
-          <HeartPulse className="size-6 shrink-0 text-primary" />
-          <span className="flex-1">
-            <span className="block font-semibold">Recommended: Zone 2 Steady Cardio · 40 min</span>
-            <span className="text-sm text-muted-foreground">
-              Incline walk, bike or elliptical at a conversational pace
-            </span>
-          </span>
-          <ArrowRight className="size-4" />
-        </Link>
-        <div className="grid gap-2 sm:grid-cols-3">
-          <FinisherLink href="/cardio/walk-run" icon={Repeat} title="Walk–Run Starter" text="34 min · beginner" />
-          <FinisherLink href="/cardio/norwegian-4x4" icon={Flame} title="Norwegian 4×4" text="40 min · VO₂max" />
-          <FinisherLink href="/cardio/core-finisher" icon={Target} title="Abs & core" text="10 min" />
-        </div>
+        {program.setting === "home" ? (
+          <>
+            <Link
+              href="/cardio/home-express"
+              className="flex items-center gap-3 rounded-xl border border-primary/50 bg-primary/10 p-4 hover:bg-primary/15"
+            >
+              <HeartPulse className="size-6 shrink-0 text-primary" />
+              <span className="flex-1">
+                <span className="block font-semibold">Recommended: Home Express Circuit · 25 min</span>
+                <span className="text-sm text-muted-foreground">
+                  Guided bodyweight circuit — or a 30–45 min brisk walk outdoors
+                </span>
+              </span>
+              <ArrowRight className="size-4" />
+            </Link>
+            <div className="grid gap-2 sm:grid-cols-3">
+              <FinisherLink
+                href="/cardio/hiit-circuit"
+                icon={Flame}
+                title="No-equipment HIIT"
+                text="20 min · intense"
+              />
+              <FinisherLink href="/cardio/core-finisher" icon={Target} title="Abs & core" text="10 min" />
+              <FinisherLink href="/home-workouts" icon={Repeat} title="Home guide" text="Progress without weights" />
+            </div>
+          </>
+        ) : (
+          <>
+            <Link
+              href="/cardio/zone2"
+              className="flex items-center gap-3 rounded-xl border border-primary/50 bg-primary/10 p-4 hover:bg-primary/15"
+            >
+              <HeartPulse className="size-6 shrink-0 text-primary" />
+              <span className="flex-1">
+                <span className="block font-semibold">Recommended: Zone 2 Steady Cardio · 40 min</span>
+                <span className="text-sm text-muted-foreground">
+                  Incline walk, bike or elliptical at a conversational pace
+                </span>
+              </span>
+              <ArrowRight className="size-4" />
+            </Link>
+            <div className="grid gap-2 sm:grid-cols-3">
+              <FinisherLink href="/cardio/walk-run" icon={Repeat} title="Walk–Run Starter" text="34 min · beginner" />
+              <FinisherLink href="/cardio/norwegian-4x4" icon={Flame} title="Norwegian 4×4" text="40 min · VO₂max" />
+              <FinisherLink href="/cardio/core-finisher" icon={Target} title="Abs & core" text="10 min" />
+            </div>
+          </>
+        )}
         <WeeklyCardio compact />
       </section>
       <section className="rounded-2xl border bg-card p-5">

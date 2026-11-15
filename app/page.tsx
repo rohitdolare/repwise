@@ -9,6 +9,7 @@ import {
   Dumbbell,
   Flame,
   HeartPulse,
+  Home as HomeIcon,
   LineChart,
   Target,
   Ruler,
@@ -75,6 +76,13 @@ const sections = [
     title: "Abs & Core",
     icon: Target,
     text: "Train all four core functions, plus a 10-minute abs finisher.",
+  },
+  {
+    n: "09",
+    href: "/home-workouts",
+    title: "Home Workouts",
+    icon: HomeIcon,
+    text: "No gym? Bodyweight plans, variation ladders and guided circuits.",
   },
 ];
 

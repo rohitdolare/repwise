@@ -24,20 +24,25 @@ interface Props {
   name: string;
   load: LoadType;
   rx: Prescription;
+  /** Logged in seconds instead of reps (planks, holds). */
+  timed?: boolean;
+  /** Next exercise in the bodyweight variation ladder. */
+  harder?: { slug: string; name: string };
   index?: number;
   showLink?: boolean;
 }
 
-export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props) {
+export function ExerciseLogger({ name, load: baseLoad, rx, timed, harder, index, showLink = true }: Props) {
+  const load: LoadType = rx.bodyweight ? "bodyweight" : baseLoad;
   const logs = useLogs();
   const { unit } = useSettings();
   const today = useTodayKey();
   const history = logs[rx.slug] ?? [];
   const todaySession = today ? history.find((s) => s.date === today) : undefined;
   const prev = previousSession(history, today);
-  const rec = recommend(rx, load, prev, unit);
+  const rec = recommend(rx, load, prev, unit, harder);
   const [drafts, setDrafts] = useState<Record<number, { w?: string; r?: string }>>({});
-  const isTimed = rx.slug === "plank" || rx.slug === "side-plank";
+  const isTimed = !!timed;
   const bodyweight = load === "bodyweight";
   const done = todaySession?.sets.length ?? 0;
   const { icon: RecIcon, cls } = recStyle[rec.kind];
@@ -110,6 +115,14 @@ export function ExerciseLogger({ name, load, rx, index, showLink = true }: Props
         <div>
           <p className="font-semibold">{rec.headline}</p>
           <p className="text-muted-foreground">{rec.detail}</p>
+          {rec.next && (
+            <Link
+              href={`/exercises/${rec.next.slug}`}
+              className="mt-1.5 inline-flex min-h-9 items-center font-semibold text-primary underline-offset-4 hover:underline"
+            >
+              See how to do {rec.next.name} →
+            </Link>
+          )}
         </div>
       </div>
 

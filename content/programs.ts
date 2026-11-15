@@ -9,6 +9,19 @@ const p = (slug: string, sets: number, repMin: number, repMax: number, rir: stri
   restSec,
 });
 
+/** Same as `p`, but done with bodyweight only (no suggested start weight). */
+const bw = (
+  slug: string,
+  sets: number,
+  repMin: number,
+  repMax: number,
+  rir: string,
+  restSec: number,
+): Prescription => ({
+  ...p(slug, sets, repMin, repMax, rir, restSec),
+  bodyweight: true,
+});
+
 export const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 export const daysShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -17,6 +30,7 @@ export const programs: Program[] = [
     id: "full-body-3",
     name: "Full Body Foundation",
     short: "Full Body",
+    setting: "gym",
     level: "Beginner",
     daysPerWeek: 3,
     summary:
@@ -74,6 +88,7 @@ export const programs: Program[] = [
     id: "upper-lower-4",
     name: "Upper / Lower Split",
     short: "Upper/Lower",
+    setting: "gym",
     level: "Beginner → Intermediate",
     daysPerWeek: 4,
     summary:
@@ -144,6 +159,7 @@ export const programs: Program[] = [
     id: "ppl-ul-5",
     name: "Push · Pull · Legs + Upper/Lower",
     short: "PPL + U/L",
+    setting: "gym",
     level: "Intermediate",
     daysPerWeek: 5,
     summary:
@@ -223,9 +239,138 @@ export const programs: Program[] = [
       },
     ],
   },
+
+  // ───────────────────────── Home (no equipment) ─────────────────────────
+  {
+    id: "home-full-body-3",
+    name: "Home Full Body",
+    short: "Home Full Body",
+    setting: "home",
+    level: "Beginner",
+    daysPerWeek: 3,
+    summary:
+      "Three bodyweight sessions a week using only the floor, a chair and a table. Every muscle is trained 3× per week. Progress by adding reps, slowing down, then moving to harder variations.",
+    whoFor: "Beginners, busy weeks, travel, or anyone without gym access. About 35–45 minutes per session.",
+    schedule: ["hfb-a", null, "hfb-b", null, "hfb-c", null, null],
+    cardio: [
+      "Rest days: 30–45 min brisk walk outdoors",
+      "1–2× per week: Home Express Circuit (25 min) on a rest day",
+      "Core is already built into every session",
+    ],
+    workouts: [
+      {
+        id: "hfb-a",
+        name: "Home A",
+        focus: "Squat · Push · Row",
+        exercises: [
+          p("bodyweight-squat", 3, 15, 25, "1–2", 60),
+          p("incline-push-up", 3, 10, 20, "1–2", 75),
+          p("inverted-row", 3, 8, 15, "1–2", 75),
+          p("glute-bridge", 3, 15, 25, "1–2", 60),
+          p("plank", 3, 20, 45, "1–2", 45),
+        ],
+      },
+      {
+        id: "hfb-b",
+        name: "Home B",
+        focus: "Split squat · Push-up · Back",
+        exercises: [
+          p("split-squat", 3, 10, 20, "1–2", 75),
+          p("push-up", 3, 8, 20, "1–2", 75),
+          p("superman", 3, 10, 15, "1–2", 45),
+          p("single-leg-calf-raise", 2, 10, 20, "0–2", 45),
+          p("dead-bug", 3, 8, 12, "1–2", 45),
+        ],
+      },
+      {
+        id: "hfb-c",
+        name: "Home C",
+        focus: "Lunge · Dips · Row",
+        exercises: [
+          p("reverse-lunge", 3, 10, 15, "1–2", 75),
+          p("chair-dip", 3, 10, 20, "1–2", 75),
+          p("inverted-row", 3, 8, 15, "1–2", 75),
+          p("glute-bridge", 3, 15, 25, "1–2", 60),
+          p("side-plank", 2, 20, 40, "1–2", 45),
+        ],
+      },
+    ],
+  },
+  {
+    id: "home-upper-lower-4",
+    name: "Home Upper / Lower",
+    short: "Home U/L",
+    setting: "home",
+    level: "Intermediate",
+    daysPerWeek: 4,
+    summary:
+      "Four bodyweight sessions: two upper, two lower. Harder variations (decline and pike push-ups, Bulgarian split squats, single-leg RDLs) and more sets for when the full-body plan feels easy.",
+    whoFor: "People who can do 15+ push-ups and want to keep building muscle at home. About 40–50 minutes per session.",
+    schedule: ["hul-upper-a", "hul-lower-a", null, "hul-upper-b", "hul-lower-b", null, null],
+    cardio: [
+      "Rest days: 30–45 min brisk walk",
+      "Once a week: No-Equipment HIIT Circuit (20 min) on a rest day",
+      "Core finisher is built into each session",
+    ],
+    workouts: [
+      {
+        id: "hul-upper-a",
+        name: "Home Upper A",
+        focus: "Push-ups · Rows · Shoulders",
+        exercises: [
+          p("push-up", 4, 8, 20, "0–2", 90),
+          p("inverted-row", 4, 8, 15, "1–2", 90),
+          p("pike-push-up", 3, 6, 12, "1–2", 90),
+          p("chair-dip", 3, 10, 20, "1–2", 60),
+          p("plank", 3, 30, 60, "1–2", 45),
+        ],
+      },
+      {
+        id: "hul-lower-a",
+        name: "Home Lower A",
+        focus: "Single-leg strength",
+        exercises: [
+          bw("bulgarian-split-squat", 3, 8, 15, "1–2", 90),
+          p("single-leg-rdl", 3, 8, 15, "1–2", 75),
+          p("step-up", 3, 10, 15, "1–2", 75),
+          p("single-leg-calf-raise", 3, 10, 20, "0–2", 45),
+          p("reverse-crunch", 3, 10, 15, "1–2", 45),
+        ],
+      },
+      {
+        id: "hul-upper-b",
+        name: "Home Upper B",
+        focus: "Decline push-ups · Arms",
+        exercises: [
+          p("decline-push-up", 4, 8, 15, "0–2", 90),
+          p("inverted-row", 4, 8, 15, "1–2", 90),
+          p("diamond-push-up", 3, 8, 15, "1–2", 75),
+          p("pike-push-up", 3, 6, 12, "1–2", 90),
+          p("side-plank", 2, 20, 45, "1–2", 45),
+        ],
+      },
+      {
+        id: "hul-lower-b",
+        name: "Home Lower B",
+        focus: "Lunges · Glutes · Calves",
+        exercises: [
+          p("reverse-lunge", 3, 10, 15, "1–2", 75),
+          p("glute-bridge", 3, 15, 25, "0–2", 60),
+          p("split-squat", 3, 10, 20, "1–2", 75),
+          p("single-leg-calf-raise", 3, 10, 20, "0–2", 45),
+          p("bicycle-crunch", 3, 12, 20, "1–2", 45),
+        ],
+      },
+    ],
+  },
 ];
 
 export const defaultProgramId = "ppl-ul-5";
+
+/** Compact workout label for the 7-day strips ("FB A", "Upper A"). */
+export function shortWorkoutName(name: string): string {
+  return name.replace("Full Body ", "FB ").replace(/^Home /, "");
+}
 
 export function getProgram(id: string | null | undefined): Program {
   return programs.find((p) => p.id === id) ?? programs.find((p) => p.id === defaultProgramId)!;

@@ -1,5 +1,6 @@
 import type { Exercise, MuscleGroup } from "@/lib/types";
 import { cardioExercises, coreExercises } from "./exercises-more";
+import { homeExercises, homePatches } from "./exercises-home";
 
 export const muscleGroups: { id: MuscleGroup; label: string; blurb: string }[] = [
   { id: "chest", label: "Chest", blurb: "Pecs and front delts — pressing and fly patterns." },
@@ -928,7 +929,9 @@ const strengthExercises: Exercise[] = [
   },
 ];
 
-export const exercises: Exercise[] = [...strengthExercises, ...coreExercises, ...cardioExercises];
+export const exercises: Exercise[] = [...strengthExercises, ...homeExercises, ...coreExercises, ...cardioExercises].map(
+  (e) => (homePatches[e.slug] ? { ...e, ...homePatches[e.slug] } : e),
+);
 
 export const exerciseMap: Record<string, Exercise> = Object.fromEntries(
   exercises.map((e) => [e.slug, e]),

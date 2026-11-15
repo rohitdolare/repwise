@@ -28,6 +28,13 @@ export interface Exercise {
   alternatives: string[];
   /** Only for cardio modalities. */
   cardio?: { impact: "Low" | "Medium" | "High"; bestFor: string; sessions: string[] };
+  /** Can be done at home with no equipment (floor, wall, chair, table, step). */
+  home?: true;
+  /** Sets are held for time — logged in seconds instead of reps. */
+  timed?: true;
+  /** Variation ladder for bodyweight progression (exercise slugs). */
+  harder?: string;
+  easier?: string;
 }
 
 export interface Prescription {
@@ -37,6 +44,8 @@ export interface Prescription {
   repMax: number;
   rir: string;
   restSec: number;
+  /** Do this exercise with bodyweight only (e.g. Bulgarian split squat in a home plan). */
+  bodyweight?: true;
 }
 
 export interface WorkoutDay {
@@ -48,6 +57,8 @@ export interface WorkoutDay {
 
 export interface Program {
   id: string;
+  /** Where the plan is trained: a gym, or at home with no equipment. */
+  setting: "gym" | "home";
   name: string;
   short: string;
   level: string;

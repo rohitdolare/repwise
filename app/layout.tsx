@@ -24,6 +24,7 @@ const offlineUrls = [
   "/nutrition",
   "/cardio",
   "/core",
+  "/home-workouts",
   ...cardioWorkouts.map((w) => `/cardio/${w.id}`),
   ...exercises.map((e) => `/exercises/${e.slug}`),
   ...principles.map((p) => `/principles/${p.slug}`),
