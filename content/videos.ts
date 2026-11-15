@@ -75,4 +75,6 @@ export const videos: Record<string, ExerciseVideo> = {
   "pike-push-up": { id: "2b5t0Cu2nQI", title: "How to do a Pike Push-Up | Proper Form & Technique | NASM", channel: "National Academy of Sports Medicine (NASM)" },
   "inverted-row": { id: "6NTruShwwKk", title: "Stronger Back at Home! How to Do Inverted Rows with a Table", channel: "Abel Hailemikiel" },
   "superman": { id: "UXUGfiNL1lI", title: "How to PROPERLY Do a Superman Exercise (FIX YOUR FORM)", channel: "Colossus Fitness" },
+  // Guided sessions (keyed by session id)
+  "surya-namaskar": { id: "1xRX1MuoImw", title: "Step by step Surya Namaskar for beginners | Learn Sun Salutation in 3 minutes", channel: "Mind Body Soul" },
 };

@@ -6,6 +6,9 @@ import { ArrowLeft, CalendarClock, Clock, Gauge, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { References } from "@/components/content";
 import { IntervalTimer } from "@/components/interval-timer";
+import { SuryaChart } from "@/components/surya-chart";
+import { VideoEmbed } from "@/components/video-embed";
+import { videos } from "@/content/videos";
 import { cardioWorkouts, getCardioWorkout, totalSeconds } from "@/content/cardio";
 import { exerciseMap } from "@/content/exercises";
 import { kindStyle } from "@/lib/cardio-style";
@@ -29,7 +32,7 @@ export default async function CardioSessionPage({ params }: PageProps<"/cardio/[
   const back =
     w.type === "Core"
       ? { href: "/core", label: "Abs & Core" }
-      : w.type === "Circuit"
+      : w.type === "Circuit" || w.type === "Yoga"
         ? { href: "/home-workouts", label: "Home Workouts" }
         : { href: "/cardio", label: "Cardio" };
 
@@ -51,6 +54,12 @@ export default async function CardioSessionPage({ params }: PageProps<"/cardio/[
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_24rem]">
         <div className="space-y-6">
           <IntervalTimer workoutId={w.id} name={w.name} phases={w.phases} />
+
+          {w.id === "surya-namaskar" && <SuryaChart />}
+
+          {videos[w.id] && (
+            <VideoEmbed video={videos[w.id]} poster={`/media/sessions/${w.id}.webp`} name={w.name} />
+          )}
 
           <details className="group rounded-2xl border bg-card">
             <summary className="cursor-pointer list-none p-4 font-heading font-bold">
@@ -94,28 +103,30 @@ export default async function CardioSessionPage({ params }: PageProps<"/cardio/[
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">{w.why}</p>
           </div>
-          <div className="rounded-2xl border bg-card p-5">
-            <h2 className="mb-3 font-heading font-bold">
-              {w.type === "Core" || w.type === "Circuit" || w.id === "hiit-circuit" ? "Exercises" : "Do it on"}
-            </h2>
-            <div className="grid grid-cols-2 gap-2">
-              {w.equipment.map((slug) => (
-                <Link key={slug} href={`/exercises/${slug}`} className="group overflow-hidden rounded-xl border">
-                  <div className="relative aspect-[3/2] bg-muted">
-                    <Image
-                      src={`/media/exercises/${slug}/1.webp`}
-                      alt=""
-                      fill
-                      unoptimized
-                      loading="lazy"
-                      className="object-cover"
-                    />
-                  </div>
-                  <p className="p-2 text-xs font-medium group-hover:underline">{exerciseMap[slug]?.name}</p>
-                </Link>
-              ))}
+          {w.equipment.length > 0 && (
+            <div className="rounded-2xl border bg-card p-5">
+              <h2 className="mb-3 font-heading font-bold">
+                {w.type === "Core" || w.type === "Circuit" || w.id === "hiit-circuit" ? "Exercises" : "Do it on"}
+              </h2>
+              <div className="grid grid-cols-2 gap-2">
+                {w.equipment.map((slug) => (
+                  <Link key={slug} href={`/exercises/${slug}`} className="group overflow-hidden rounded-xl border">
+                    <div className="relative aspect-[3/2] bg-muted">
+                      <Image
+                        src={`/media/exercises/${slug}/1.webp`}
+                        alt=""
+                        fill
+                        unoptimized
+                        loading="lazy"
+                        className="object-cover"
+                      />
+                    </div>
+                    <p className="p-2 text-xs font-medium group-hover:underline">{exerciseMap[slug]?.name}</p>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           <References items={w.references} />
         </aside>
       </div>

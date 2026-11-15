@@ -1,6 +1,7 @@
 import { refs, type Block, type Reference } from "./blocks";
+import type { PoseId } from "@/components/pose-figure";
 
-export type PhaseKind = "warm" | "easy" | "work" | "rest" | "cool";
+export type PhaseKind = "warm" | "easy" | "work" | "rest" | "cool" | "flow";
 
 export interface Phase {
   label: string;
@@ -9,12 +10,15 @@ export interface Phase {
   cue?: string;
   /** Optional exercise page for this phase. */
   slug?: string;
+  /** Yoga pose illustration to show for this phase. */
+  pose?: PoseId;
+  mirror?: boolean;
 }
 
 export interface CardioWorkout {
   id: string;
   name: string;
-  type: "Zone 2" | "Intervals" | "HIIT" | "Sprint" | "Core" | "Circuit";
+  type: "Zone 2" | "Intervals" | "HIIT" | "Sprint" | "Core" | "Circuit" | "Yoga";
   level: "Beginner" | "Intermediate" | "Advanced";
   summary: string;
   why: string;
@@ -59,6 +63,54 @@ const circuit = (
         return phases;
       }),
     () => [{ label: "Round rest", sec: roundRest, kind: "rest", cue: "Shake it out, sip water" }],
+  );
+
+/** The 12 poses of Surya Namaskar, in order, with the breath for each. Used by the guided flow and the pose chart. */
+export const suryaSequence: { n: number; name: string; english: string; pose: PoseId; breath: string; how: string }[] = [
+  { n: 1, name: "Pranamasana", english: "Prayer", pose: "prayer", breath: "Out", how: "Stand tall, palms together at the chest" },
+  { n: 2, name: "Hasta Uttanasana", english: "Raised arms", pose: "raised-arms", breath: "In", how: "Lift the arms up and gently back, biceps by the ears" },
+  { n: 3, name: "Hasta Padasana", english: "Forward bend", pose: "forward-fold", breath: "Out", how: "Fold forward, hands beside the feet — bend the knees if needed" },
+  { n: 4, name: "Ashwa Sanchalanasana", english: "Low lunge", pose: "low-lunge", breath: "In", how: "Step one leg back, knee down, chest up, look up" },
+  { n: 5, name: "Dandasana", english: "Plank", pose: "plank", breath: "Hold", how: "Step the other leg back into a straight plank" },
+  { n: 6, name: "Ashtanga Namaskara", english: "Eight limbs", pose: "eight-limbs", breath: "Out", how: "Knees, chest and chin to the floor, hips slightly up" },
+  { n: 7, name: "Bhujangasana", english: "Cobra", pose: "cobra", breath: "In", how: "Slide forward and lift the chest, elbows soft, shoulders down" },
+  { n: 8, name: "Parvatasana", english: "Mountain", pose: "mountain", breath: "Out", how: "Lift the hips into an upside-down V, heels toward the floor" },
+  { n: 9, name: "Ashwa Sanchalanasana", english: "Low lunge", pose: "low-lunge", breath: "In", how: "Step the first leg forward between the hands, look up" },
+  { n: 10, name: "Hasta Padasana", english: "Forward bend", pose: "forward-fold", breath: "Out", how: "Bring the other foot forward and fold" },
+  { n: 11, name: "Hasta Uttanasana", english: "Raised arms", pose: "raised-arms", breath: "In", how: "Roll up and reach the arms up and back" },
+  { n: 12, name: "Tadasana", english: "Standing", pose: "tadasana", breath: "Out", how: "Lower the arms, stand tall and relax" },
+];
+
+const breathCue = (b: string) => (b === "Hold" ? "hold the breath" : `breathe ${b.toLowerCase()}`);
+
+/** One half-round, leading with `leg`. Poses 4/9 step that leg back/forward; 5/10 move the other leg. */
+const suryaPoses = (leg: "right" | "left") => {
+  const other = leg === "right" ? "left" : "right";
+  const sided: Record<number, string> = {
+    4: `Step the ${leg} leg back, knee down, chest up, look up`,
+    5: `Step the ${other} leg back into a straight plank`,
+    9: `Step the ${leg} foot forward between the hands, look up`,
+    10: `Bring the ${other} foot forward and fold`,
+  };
+  return suryaSequence.map((p) => ({
+    label: `${p.n} · ${p.name} (${p.english})`,
+    pose: p.pose,
+    cue: `${sided[p.n] ?? p.how} · ${breathCue(p.breath)}`,
+  }));
+};
+
+/** One full round = right-leg half + left-leg half. `sec` is the time per pose (≈ one breath). */
+const suryaRound = (round: number, rounds: number, sec: number): Phase[] =>
+  (["right", "left"] as const).flatMap((leg) =>
+    suryaPoses(leg).map((p) => ({
+      label: p.label,
+      sec,
+      kind: "flow" as const,
+      pose: p.pose,
+      // Left-leg half is shown mirrored so the side change is visible at a glance.
+      mirror: leg === "left",
+      cue: `Round ${round}/${rounds} · ${leg} leg · ${p.cue}`,
+    })),
   );
 
 export const cardioWorkouts: CardioWorkout[] = [
@@ -229,6 +281,48 @@ export const cardioWorkouts: CardioWorkout[] = [
       { label: "Cool-down", sec: m(2), kind: "cool", cue: "Walk around, slow your breathing, stretch" },
     ],
     references: [refs.loads, refs.hiit],
+  },
+  {
+    id: "surya-namaskar",
+    name: "Surya Namaskar (Sun Salutation)",
+    type: "Yoga",
+    level: "Beginner",
+    summary:
+      "A guided flow of the 12 classic Sun Salutation poses: 3 slow rounds to learn the sequence, then 3 flowing rounds. Each round is done on the right leg, then the left. No equipment — just a mat.",
+    why: "Surya Namaskar moves every major joint through a full range and links each pose to a breath. It warms up the whole body, improves flexibility and posture, and at a faster pace raises your heart rate like light cardio.",
+    intensity: "Easy to moderate · one breath per pose · never force a stretch",
+    howOften: "Daily if you like — 2 slow rounds make a great warm-up before a home workout.",
+    equipment: [],
+    phases: [
+      {
+        label: "Settle in",
+        sec: 60,
+        kind: "warm",
+        pose: "prayer",
+        cue: "Stand at the front of your mat. Roll the neck and shoulders, then take 5 slow breaths.",
+      },
+      ...repeat(
+        6,
+        (r) => suryaRound(r + 1, 6, r < 3 ? 6 : 4),
+        (r) => [
+          {
+            label: "Rest in Tadasana",
+            sec: 30,
+            kind: "rest",
+            pose: "tadasana",
+            cue: r === 2 ? "Next 3 rounds flow a little faster — one breath per pose" : "Stand tall, breathe slowly",
+          },
+        ],
+      ),
+      {
+        label: "Shavasana (Rest)",
+        sec: 120,
+        kind: "cool",
+        pose: "shavasana",
+        cue: "Lie on your back, arms by your sides, eyes closed. Let your breathing return to normal.",
+      },
+    ],
+    references: [refs.suryaNamaskar],
   },
   {
     id: "core-finisher",

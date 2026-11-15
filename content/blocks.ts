@@ -97,4 +97,8 @@ export const refs = {
     label: "Vispute et al. — The effect of abdominal exercise on abdominal fat (2011)",
     url: pubmed("The effect of abdominal exercise on abdominal fat Vispute"),
   },
+  suryaNamaskar: {
+    label: "Studies on Surya Namaskar — flexibility, strength and cardiovascular effects (PubMed)",
+    url: pubmed("Surya Namaskar"),
+  },
 } satisfies Record<string, Reference>;

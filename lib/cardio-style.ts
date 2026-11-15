@@ -6,4 +6,5 @@ export const kindStyle: Record<PhaseKind, { label: string; panel: string; dot: s
   work: { label: "Work", panel: "bg-primary/20 border-primary", dot: "bg-primary" },
   rest: { label: "Rest", panel: "bg-muted border-border", dot: "bg-muted-foreground" },
   cool: { label: "Cool-down", panel: "bg-indigo-500/15 border-indigo-500/40", dot: "bg-indigo-500" },
+  flow: { label: "Pose", panel: "bg-teal-500/15 border-teal-500/40", dot: "bg-teal-500" },
 };

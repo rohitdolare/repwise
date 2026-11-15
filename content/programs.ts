@@ -255,6 +255,7 @@ export const programs: Program[] = [
     cardio: [
       "Rest days: 30–45 min brisk walk outdoors",
       "1–2× per week: Home Express Circuit (25 min) on a rest day",
+      "Any day: Surya Namaskar (18 min) for mobility — or 2 rounds as your warm-up",
       "Core is already built into every session",
     ],
     workouts: [
@@ -310,6 +311,7 @@ export const programs: Program[] = [
     cardio: [
       "Rest days: 30–45 min brisk walk",
       "Once a week: No-Equipment HIIT Circuit (20 min) on a rest day",
+      "Any day: Surya Namaskar (18 min) for mobility — or 2 rounds as your warm-up",
       "Core finisher is built into each session",
     ],
     workouts: [

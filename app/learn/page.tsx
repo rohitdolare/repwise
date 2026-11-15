@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Apple, ArrowRight, Flame, HeartPulse, Home, Ruler, Target, TrendingUp } from "lucide-react";
+import { Apple, ArrowRight, Flame, HeartPulse, Home, Ruler, Sun, Target, TrendingUp } from "lucide-react";
 import { PageHeader } from "@/components/content";
 import { InstallApp } from "@/components/install-app";
 import { principles } from "@/content/principles";
@@ -64,6 +64,21 @@ export default function LearnPage() {
         description="Short, evidence-based guides. Read one per day and in two weeks you'll know more than most people in your gym."
       />
       <div className="mx-auto max-w-6xl space-y-10 px-4">
+        <Link
+          href="/cardio/surya-namaskar"
+          className="flex items-center gap-4 rounded-3xl border border-primary/50 bg-primary/10 p-5 transition-colors hover:bg-primary/15"
+        >
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground">
+            <Sun className="size-6" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-heading text-lg font-bold">Surya Namaskar (Sun Salutation)</span>
+            <span className="text-sm text-muted-foreground">
+              Guided 12-pose yoga flow with breathing cues · 18 min · no equipment
+            </span>
+          </span>
+          <ArrowRight className="size-5 shrink-0" />
+        </Link>
         <section>
           <div className="mb-4 flex items-end justify-between">
             <h2 className="font-heading text-2xl font-black">

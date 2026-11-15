@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { Home, Search, X } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Home, Search, Timer, X } from "lucide-react";
 import type { MuscleGroup } from "@/lib/types";
 import { ExerciseCard, type ExerciseSummary } from "./exercise-card";
 import { cn } from "@/lib/utils";
@@ -19,12 +20,21 @@ function setHomeFilter(on: boolean) {
   window.dispatchEvent(new HashChangeEvent("hashchange"));
 }
 
+export interface SessionSummary {
+  id: string;
+  name: string;
+  type: string;
+  summary: string;
+}
+
 export function ExerciseBrowser({
   items,
   groups,
+  sessions = [],
 }: {
   items: ExerciseSummary[];
   groups: { id: MuscleGroup; label: string; blurb: string }[];
+  sessions?: SessionSummary[];
 }) {
   const [q, setQ] = useState("");
   const [group, setGroup] = useState<MuscleGroup | "all">("all");
@@ -42,6 +52,11 @@ export function ExerciseBrowser({
           e.equipment.some((m) => m.toLowerCase().includes(needle))),
     );
   }, [items, q, group, homeOnly]);
+
+  const needle = q.trim().toLowerCase();
+  const matchedSessions = needle
+    ? sessions.filter((s) => `${s.name} ${s.type} ${s.summary}`.toLowerCase().includes(needle))
+    : [];
 
   const shownGroups = groups.filter((g) => filtered.some((e) => e.group === g.id));
 
@@ -97,7 +112,31 @@ export function ExerciseBrowser({
         </div>
       </div>
 
-      {shownGroups.length === 0 && (
+      {matchedSessions.length > 0 && (
+        <section>
+          <h2 className="mb-3 font-heading text-xl font-bold">Guided sessions</h2>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {matchedSessions.map((s) => (
+              <Link
+                key={s.id}
+                href={`/cardio/${s.id}`}
+                className="flex items-center gap-3 rounded-2xl border border-primary/50 bg-primary/10 p-4 hover:bg-primary/15"
+              >
+                <Timer className="size-6 shrink-0 text-primary" />
+                <span className="min-w-0 flex-1">
+                  <span className="block font-heading font-bold">{s.name}</span>
+                  <span className="line-clamp-2 text-sm text-muted-foreground">
+                    {s.type} · {s.summary}
+                  </span>
+                </span>
+                <ArrowRight className="size-4 shrink-0" />
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {shownGroups.length === 0 && matchedSessions.length === 0 && (
         <p className="py-10 text-center text-muted-foreground">
           {q ? <>No exercises match “{q}”.</> : "No home-friendly exercises in this group yet."}
         </p>

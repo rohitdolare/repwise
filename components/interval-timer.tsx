@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Pause, Play, RotateCcw, SkipBack, SkipForward, Square } from "lucide-react";
 import type { Phase } from "@/content/cardio";
 import { kindStyle } from "@/lib/cardio-style";
+import { PoseFigure } from "./pose-figure";
 import { beep, primeAudio, tone, vibrate } from "@/lib/beep";
 import { logCardio } from "@/lib/store";
 import { formatTime } from "@/lib/format";
@@ -71,13 +72,19 @@ export function IntervalTimer({ workoutId, name, phases }: { workoutId: string; 
         idxRef.current = i;
         endsAt.current = end;
         setIdx(i);
-        tone(phases[i].kind === "work" ? 1046 : 660, 280, 0.45);
-        vibrate(phases[i].kind === "work" ? [150, 80, 150] : 200);
+        const kind = phases[i].kind;
+        // Yoga poses get a soft cue; intervals get a clear signal.
+        tone(
+          kind === "work" ? 1046 : kind === "flow" ? 587 : 660,
+          kind === "flow" ? 180 : 280,
+          kind === "flow" ? 0.25 : 0.45,
+        );
+        vibrate(kind === "work" ? [150, 80, 150] : kind === "flow" ? 40 : 200);
       }
       const left = (end - now) / 1000;
       const whole = Math.ceil(left);
       const key = `${i}-${whole}`;
-      if (whole <= 3 && whole >= 1 && phases[i].sec > 5 && lastTick.current !== key) {
+      if (whole <= 3 && whole >= 1 && phases[i].sec > 5 && phases[i].kind !== "flow" && lastTick.current !== key) {
         lastTick.current = key;
         tone(520, 90, 0.3);
       }
@@ -161,7 +168,23 @@ export function IntervalTimer({ workoutId, name, phases }: { workoutId: string; 
           )}
         </div>
 
-        <p className="my-6 text-center font-mono text-7xl font-bold tabular-nums md:text-8xl" aria-live="off">
+        {phase.pose && (
+          <PoseFigure
+            key={`${idx}-${phase.pose}`}
+            pose={phase.pose}
+            mirror={phase.mirror}
+            title={phase.label}
+            className="mx-auto mt-4 h-40 w-auto animate-in duration-300 fade-in md:h-48"
+          />
+        )}
+
+        <p
+          className={cn(
+            "text-center font-mono font-bold tabular-nums",
+            phase.pose ? "my-3 text-5xl md:text-6xl" : "my-6 text-7xl md:text-8xl",
+          )}
+          aria-live="off"
+        >
           {formatTime(remaining)}
         </p>
 

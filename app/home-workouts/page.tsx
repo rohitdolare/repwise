@@ -17,7 +17,11 @@ export const metadata: Metadata = {
 
 export default function HomeWorkoutsPage() {
   const plans = programs.filter((p) => p.setting === "home");
-  const circuits = [getCardioWorkout("home-express")!, getCardioWorkout("hiit-circuit")!];
+  const circuits = [
+    getCardioWorkout("home-express")!,
+    getCardioWorkout("surya-namaskar")!,
+    getCardioWorkout("hiit-circuit")!,
+  ];
 
   return (
     <GuidePage
@@ -55,7 +59,7 @@ export default function HomeWorkoutsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="font-heading text-xl font-bold">Short on time? Guided circuits</h2>
+            <h2 className="font-heading text-xl font-bold">Guided sessions</h2>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {circuits.map((w, i) => (
                 <CardioCard key={w.id} w={w} highlight={i === 0} />

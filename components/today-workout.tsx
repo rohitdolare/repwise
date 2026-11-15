@@ -196,7 +196,7 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
           )}
 
           <Link
-            href="/recovery#warm-up"
+            href={program.setting === "home" ? "/cardio/surya-namaskar" : "/recovery#warm-up"}
             className="flex items-center gap-3 rounded-2xl border border-dashed p-4 text-sm hover:border-primary/60"
           >
             <span className="grid size-9 place-items-center rounded-full bg-accent text-accent-foreground">
@@ -205,7 +205,7 @@ export function TodayWorkout({ meta }: { meta: ExerciseMeta }) {
             <span>
               <b>Warm up first:</b>{" "}
               {program.setting === "home"
-                ? "5 min — march or jog in place, arm circles, 10 slow squats and hip openers."
+                ? "2 slow rounds of Surya Namaskar (tap for the guided flow), or march in place, arm circles and slow squats."
                 : "5 min light cardio, dynamic mobility, then 2–4 ramp-up sets on your first lift."}
             </span>
           </Link>
@@ -322,7 +322,12 @@ function RestDay({
                 text="20 min · intense"
               />
               <FinisherLink href="/cardio/core-finisher" icon={Target} title="Abs & core" text="10 min" />
-              <FinisherLink href="/home-workouts" icon={Repeat} title="Home guide" text="Progress without weights" />
+              <FinisherLink
+                href="/cardio/surya-namaskar"
+                icon={Repeat}
+                title="Surya Namaskar"
+                text="18 min · mobility"
+              />
             </div>
           </>
         ) : (
@@ -340,7 +345,8 @@ function RestDay({
               </span>
               <ArrowRight className="size-4" />
             </Link>
-            <div className="grid gap-2 sm:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <FinisherLink href="/cardio/surya-namaskar" icon={Repeat} title="Surya Namaskar" text="18 min · mobility" />
               <FinisherLink href="/cardio/walk-run" icon={Repeat} title="Walk–Run Starter" text="34 min · beginner" />
               <FinisherLink href="/cardio/norwegian-4x4" icon={Flame} title="Norwegian 4×4" text="40 min · VO₂max" />
               <FinisherLink href="/cardio/core-finisher" icon={Target} title="Abs & core" text="10 min" />

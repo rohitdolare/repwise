@@ -453,6 +453,48 @@ export const homeGuide: Guide = {
       ],
     },
     {
+      id: "surya-namaskar",
+      title: "Surya Namaskar (Sun Salutation)",
+      blocks: [
+        {
+          type: "p",
+          text: "A traditional yoga sequence of 12 poses, each linked to one breath. It mobilises the spine, hips and shoulders, strengthens the arms and core, and makes an excellent warm-up or a gentle session on rest days. One full round is the 12 poses leading with the right leg, then 12 leading with the left.",
+        },
+        {
+          type: "table",
+          head: ["#", "Pose", "Breath", "How"],
+          rows: [
+            ["1", "Pranamasana — Prayer", "Out", "Stand tall, palms together at the chest"],
+            ["2", "Hasta Uttanasana — Raised arms", "In", "Arms up and gently back"],
+            ["3", "Hasta Padasana — Forward bend", "Out", "Fold forward, hands by the feet (bend knees if needed)"],
+            ["4", "Ashwa Sanchalanasana — Low lunge", "In", "One leg steps back, knee down, look up"],
+            ["5", "Dandasana — Plank", "Hold", "Other leg back, body straight"],
+            ["6", "Ashtanga Namaskara — Eight limbs", "Out", "Knees, chest and chin to the floor"],
+            ["7", "Bhujangasana — Cobra", "In", "Slide forward, lift the chest"],
+            ["8", "Parvatasana — Mountain", "Out", "Hips up into an upside-down V"],
+            ["9", "Ashwa Sanchalanasana — Low lunge", "In", "Same leg as pose 4 steps forward"],
+            ["10", "Hasta Padasana — Forward bend", "Out", "Back foot joins, fold"],
+            ["11", "Hasta Uttanasana — Raised arms", "In", "Roll up, arms up and back"],
+            ["12", "Tadasana — Standing", "Out", "Arms down, stand tall"],
+          ],
+        },
+        {
+          type: "list",
+          items: [
+            "Learning: 3–6 slow rounds, one deep breath per pose. Use the guided timer — it calls out every pose and breath.",
+            "Warm-up before a home workout: 2 slow rounds.",
+            "As cardio: 12 or more rounds at a steady pace raises your heart rate like brisk walking.",
+          ],
+        },
+        {
+          type: "callout",
+          tone: "warn",
+          title: "Go gently",
+          text: "Never force a stretch — bend your knees in the forward folds and keep the cobra low if your back complains. If you have a back or wrist injury, high blood pressure, or are pregnant, check with a doctor or qualified yoga teacher first.",
+        },
+      ],
+    },
+    {
       id: "setup",
       title: "Set up a safe home space",
       blocks: [
@@ -482,8 +524,8 @@ export const homeGuide: Guide = {
           type: "list",
           items: [
             "Pick a home plan below (or on the Plan tab) and choose your own training days.",
-            "Warm up for 5 minutes: march or jog in place, arm circles, slow squats and hip openers.",
-            "On rest days, walk 30–45 minutes outdoors or do the Home Express Circuit.",
+            "Warm up for 5 minutes: 2 slow rounds of Surya Namaskar, or march in place, arm circles, slow squats and hip openers.",
+            "On rest days, walk 30–45 minutes outdoors, do the Home Express Circuit, or a gentle Surya Namaskar session.",
             "Eat enough protein (1.6–2.2 g per kg of bodyweight) and sleep 7–9 hours — same as at the gym.",
             "Back at the gym some weeks? Switch plans any time; your numbers are kept per exercise.",
           ],
